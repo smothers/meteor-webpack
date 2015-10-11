@@ -3,7 +3,7 @@ Meteor pacakge to build your application using Webpack. Use hot module replaceme
 To try different examples or setup a new project, you can use the [kickstart projects](https://github.com/thereactivestack/kickstart).
 
 # How does it work?
-Every JavaScript files (.js) and CSS import files (.import.css) will be ignored by Meteor except webpack.conf.js. This is the file that will be configuring your build process. You need one for the server and one for the client.
+Every JavaScript files (.js) and CSS import files (.import.css) will be ignored by Meteor except webpack.conf.js. This is the file  that will be configuring your build process. You need one for the server and one for the client.
 
 One little difference is you don't need to specify the ouput or setup the hot module replacement (it will automatically in development).
 
@@ -34,10 +34,10 @@ There is no way to know inside a Meteor compiler plugin if we are in production 
 
 You can use meteor run, meteor build, mup or anything working with Meteor.
 
-# Run in production mode
+## Run in production mode
 `NODE_ENV=production meteor run --production`
 
-# Build for production
+## Build for production
 `NODE_ENV=production meteor build .`
 
 # Install
