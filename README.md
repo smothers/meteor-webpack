@@ -3,13 +3,9 @@ Meteor pacakge to build your application using Webpack. Use hot module replaceme
 To try different examples or setup a new project, you can use the [kickstart projects](https://github.com/thereactivestack/kickstart).
 
 # How does it work?
-Every JavaScript files (.js) and CSS import files (.import.css) will be ignored by Meteor except webpack.conf.js.
+Every JavaScript files (.js) and CSS import files (.import.css) will be ignored by Meteor except webpack.conf.js. This is the file that will be configuring your build process. You need one for the server and one for the client.
 
-You need to have one available on the client and on the server.
-
-You don't need to specify the ouput and setup the hot module replacement (it will automatically in development).
-
-You have to use `meteorhacks:npm` to get NPM modules.
+One little difference is you don't need to specify the ouput or setup the hot module replacement (it will automatically in development).
 
 Here is an example of a webpack.conf.js:
 
