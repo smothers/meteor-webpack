@@ -36,9 +36,9 @@ WebpackCompiler = class WebpackCompiler {
       const webpackConfig = getWebpackConfig(configFile, filePath, data);
 
       const shortName =
-        (platform.indexOf('cordova') === 0) ?
+        (platform.indexOf('cordova') >= 0) ?
           'cordova' :
-          (platform.indexOf('web') === 0) ? 'web' : 'server';
+          (platform.indexOf('web') >= 0) ? 'web' : 'server';
 
       const usingDevServer = IS_DEBUG && shortName !== 'server';
 
