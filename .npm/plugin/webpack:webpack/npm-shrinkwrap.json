@@ -1,13 +1,5 @@
 {
   "dependencies": {
-    "babel-plugin-react-transform": {
-      "version": "1.1.1",
-      "dependencies": {
-        "path-parse": {
-          "version": "1.0.5"
-        }
-      }
-    },
     "connect": {
       "version": "3.4.0",
       "dependencies": {
@@ -56,111 +48,6 @@
     },
     "memory-fs": {
       "version": "0.2.0"
-    },
-    "react": {
-      "version": "0.14.0",
-      "dependencies": {
-        "envify": {
-          "version": "3.4.0",
-          "dependencies": {
-            "through": {
-              "version": "2.3.8"
-            },
-            "jstransform": {
-              "version": "10.1.0",
-              "dependencies": {
-                "base62": {
-                  "version": "0.1.1"
-                },
-                "esprima-fb": {
-                  "version": "13001.1001.0-dev-harmony-fb"
-                },
-                "source-map": {
-                  "version": "0.1.31",
-                  "dependencies": {
-                    "amdefine": {
-                      "version": "1.0.0"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "fbjs": {
-          "version": "0.3.1",
-          "dependencies": {
-            "core-js": {
-              "version": "1.2.1"
-            },
-            "promise": {
-              "version": "7.0.4",
-              "dependencies": {
-                "asap": {
-                  "version": "2.0.3"
-                }
-              }
-            },
-            "ua-parser-js": {
-              "version": "0.7.9"
-            },
-            "whatwg-fetch": {
-              "version": "0.9.0"
-            }
-          }
-        }
-      }
-    },
-    "react-transform-catch-errors": {
-      "version": "1.0.0"
-    },
-    "react-transform-hmr": {
-      "version": "1.0.1",
-      "dependencies": {
-        "global": {
-          "version": "4.3.0",
-          "dependencies": {
-            "min-document": {
-              "version": "2.17.0",
-              "dependencies": {
-                "dom-walk": {
-                  "version": "0.1.1"
-                }
-              }
-            },
-            "process": {
-              "version": "0.5.2"
-            }
-          }
-        },
-        "react-proxy": {
-          "version": "1.1.1",
-          "dependencies": {
-            "lodash": {
-              "version": "3.10.1"
-            },
-            "react-deep-force-update": {
-              "version": "1.0.0"
-            }
-          }
-        }
-      }
-    },
-    "redbox-react": {
-      "version": "1.1.1",
-      "dependencies": {
-        "error-stack-parser": {
-          "version": "1.2.3",
-          "dependencies": {
-            "stackframe": {
-              "version": "0.3.1"
-            }
-          }
-        },
-        "object-assign": {
-          "version": "4.0.1"
-        }
-      }
     },
     "underscore": {
       "version": "1.8.3"

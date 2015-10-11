@@ -16,7 +16,7 @@ let configHashes = {};
 
 const IS_DEBUG = process.env.NODE_ENV !== 'production';
 const CWD = process.cwd();
-const ROOT_NPM = CWD + '/packages/npm-container/.npm/package/node_modules/node_modules';
+const ROOT_NPM = CWD + '/packages/npm-container/.npm/package/node_modules';
 const WEBPACK_PORT = process.env.WEBPACK_PORT || 3500;
 
 WebpackCompiler = class WebpackCompiler {
@@ -109,9 +109,9 @@ function prepareConfig(target, webpackConfig, usingDevServer) {
     webpackConfig.plugins = [];
   }
 
-  webpackConfig.plugins.shift(new webpack.optimize.DedupePlugin());
+  webpackConfig.plugins.unshift(new webpack.optimize.DedupePlugin());
 
-  webpackConfig.plugins.shift(new webpack.DefinePlugin({
+  webpackConfig.plugins.unshift(new webpack.DefinePlugin({
     'process.env.NODE_ENV': JSON.stringify(IS_DEBUG ? 'development' : 'production'),
     'Meteor.isClient': JSON.stringify(target !== 'server'),
     'Meteor.isServer': JSON.stringify(target === 'server'),
@@ -152,7 +152,7 @@ function compile(target, file, webpackConfig) {
 
       if (err) {
         if (errors) {
-          errors.shift(err);
+          errors.unshift(err);
         } else {
           errors = [err];
         }
