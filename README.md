@@ -1,11 +1,13 @@
-Meteor pacakge to build your application using Webpack. Use hot module replacement (HMR) in development mode.
+Seemlessly integrate Webpack with the Meteor build system.
+
+Build your application with his assets. Use hot module replacement (HMR) in development mode. Optimize the code in production mode.
 
 To try different examples or setup a new project, you can use the [kickstart projects](https://github.com/thereactivestack/kickstart).
 
 # How does it work?
-Every JavaScript files (.js) and CSS import files (.import.css) will be ignored by Meteor except webpack.conf.js. This is the file  that will be configuring your build process. You need one for the server and one for the client.
+Every JavaScript files (.js) and CSS import files (.import.css) are ignored.
 
-One little difference is you don't need to specify the ouput or setup the hot module replacement (it will automatically in development).
+It looks for the `webpack.conf.js` file on the server and on the client. The config file will be adapted depending if you are in development (add hot module replacement) or production mode (optimize the code) and build it on memory. Then, it sends the result to Meteor and continue the build process.
 
 Here is an example of a webpack.conf.js:
 
@@ -30,7 +32,7 @@ module.exports = {
 ```
 
 # Production
-There is no way to know inside a Meteor compiler plugin if we are in production or development mode. You need to tell the webpack compiler by setting NODE_ENV at production.
+To run or build in production, you need to set your environment variable NODE_ENV to production.
 
 You can use meteor run, meteor build, mup or anything working with Meteor.
 
@@ -40,29 +42,31 @@ You can use meteor run, meteor build, mup or anything working with Meteor.
 ## Build for production
 `NODE_ENV=production meteor build .`
 
+*We will hopefully figure out a way to detect when Meteor is in production mode. This is the best we can do for now.*
+
 # Install
 It is easier to start by cloning one of the [kickstart projects](https://github.com/thereactivestack/kickstart).
 
 If you would like to create your own from scratch, here are the steps.
 
 1. Setup the correct Meteor packages
-```bash
-meteor remove ecmascript # webpack will take care of it, you can't keep both
-meteor add webpack:webpack
-meteor add meteorhacks:npm # you absolutely need this to get the relevant NPM modules
-```
+    ```bash
+    meteor remove ecmascript # webpack will take care of it, you can't keep both
+    meteor add webpack:webpack
+    meteor add meteorhacks:npm # you absolutely need this to get the relevant NPM modules
+    ```
 
-2. Add the NPM modules your webpack config will need.
+1. Add the NPM modules your webpack config will need.
 
-3. Add `webpack.conf.js` and your client entry file in a client folder.
+1. Add `webpack.conf.js` and your client entry file in a client folder.
 
-4. Add `webpack.conf.js` and your server entry file in a server folder.
+1. Add `webpack.conf.js` and your server entry file in a server folder.
 
-5. (optional) Add ios and/or android support
-```bash
-meteor add-platform ios
-meteor add-platform android
-```
+1. (optional) Add ios and/or android support
+    ```bash
+    meteor add-platform ios
+    meteor add-platform android
+    ```
 
 # Troubleshooting
 
