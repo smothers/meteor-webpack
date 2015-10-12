@@ -1,4 +1,4 @@
-Seemlessly integrate Webpack with the Meteor build system.
+Seamlessly integrate Webpack with the Meteor build system.
 
 Build your application with his assets. Use hot module replacement (HMR) in development mode. Optimize the code in production mode.
 
