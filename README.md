@@ -5,9 +5,15 @@ Build your application with his assets. Use hot module replacement (HMR) in deve
 To try different examples or setup a new project, you can use the [kickstart projects](https://github.com/thereactivestack/kickstart).
 
 # How does it work?
-Every JavaScript files (.js) and CSS import files (.import.css) are ignored.
+Webpack is configured by using a webpack.conf.js file. One on the server and one on the client.
 
-It looks for the `webpack.conf.js` file on the server and on the client. The config file will be adapted depending if you are in development (add hot module replacement) or production mode (optimize the code) and build it on memory. Then, it sends the result to Meteor and continue the build process.
+It looks for the entry file and build the entire application following the import (ES6 modules) / require (CommonJS).
+
+The JavaScript files (.js) and CSS import files (.import.css) are not automatically included.
+
+In development mode, it will add to your configuration what is needed to make hot module replacement (HMR) work.
+
+In production mode, it will add the best optimization config and include the source map.
 
 Here is an example of a webpack.conf.js:
 
@@ -42,7 +48,7 @@ You can use meteor run, meteor build, mup or anything working with Meteor.
 ## Build for production
 `NODE_ENV=production meteor build .`
 
-*We will hopefully figure out a way to detect when Meteor is in production mode. This is the best we can do for now.*
+*We are going to remove this once we have a fix that detect Meteor production mode in a compiler*
 
 # Install
 It is easier to start by cloning one of the [kickstart projects](https://github.com/thereactivestack/kickstart).
@@ -75,4 +81,4 @@ It seems like the babel plugins are not looking into the correct directory and t
 
 `ln -s packages/npm-container/.npm/package/node_modules`
 
-*Hopefully we will find a fix for this. It only applies to babel plugins.*
+*We are going to remove this step once we have a fix*
