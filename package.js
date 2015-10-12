@@ -10,7 +10,7 @@ Package.registerBuildPlugin({
     name: 'webpack:webpack',
     use: [
       'meteor',
-      'ecmascript'
+      'ecmascript@0.1.5'
     ],
     sources: [
       'plugin/WebpackSourceMapFix.js',
