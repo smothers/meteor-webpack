@@ -13,6 +13,7 @@ Package.registerBuildPlugin({
       'ecmascript'
     ],
     sources: [
+      'plugin/WebpackSourceMapFix.js',
       'plugin/WebpackCompiler.js',
       'plugin/webpack-plugin.js'
     ],

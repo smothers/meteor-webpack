@@ -87,6 +87,20 @@ function prepareConfig(target, webpackConfig, usingDevServer) {
     webpackConfig.output = {};
   }
 
+  if (IS_DEBUG) {
+    webpackConfig.devtool = webpackConfig.devtool || 'cheap-eval-source-map';
+  } else {
+    webpackConfig.devtool = 'source-map';
+  }
+
+  if (!usingDevServer) {
+    if (IS_DEBUG) {
+      webpackConfig.devtool = 'cheap-source-map';
+    } else {
+      webpackConfig.devtool = 'source-map';
+    }
+  }
+
   webpackConfig.output.path = '/memory/webpack';
   webpackConfig.output.publicPath = IS_DEBUG ? 'http://localhost:' + WEBPACK_PORT + '/assets/' : '/assets/';
   webpackConfig.output.filename = target + '.js';
@@ -170,10 +184,23 @@ function compile(target, file, webpackConfig) {
     }
   } else {
     const outputPath = webpackConfig.output.path + '/' + webpackConfig.output.filename;
+    const sourceMapPath = '/memory/webpack/' + target + '.js.map';
+
+    // We have to fix the source map until Meteor update source-map:
+    // https://github.com/meteor/meteor/pull/5411
+
+    let sourceMapData = fs.readFileSync(sourceMapPath);
+    let sourceMap;
+
+    if (sourceMapData) {
+      sourceMap = JSON.parse(sourceMapData.toString());
+      WebpackSourceMapFix(sourceMap);
+    }
 
     file.addJavaScript({
       path: target + '.js',
-      data: fs.readFileSync(outputPath).toString()
+      data: fs.readFileSync(outputPath).toString(),
+      sourceMap
     });
 
     if (!IS_DEBUG && target !== 'server') {
@@ -186,7 +213,7 @@ function addAssets(target, file, fs) {
   const assets = fs.readdirSync('/memory/webpack');
 
   for (let asset of assets) {
-    if (asset !== target + '.js') {
+    if (asset !== target + '.js' && asset !== target + '.js.map') {
       const data = fs.readFileSync('/memory/webpack/' + asset);
 
       file.addAsset({
