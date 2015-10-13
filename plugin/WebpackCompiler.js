@@ -132,6 +132,10 @@ function prepareConfig(target, webpackConfig, usingDevServer) {
     'Meteor.isCordova': JSON.stringify(target === 'cordova')
   }));
 
+  if (target === 'web') {
+    webpackConfig.plugins.push(new webpack.optimize.CommonsChunkPlugin('common', `common.${target}.js`));
+  }
+
   if (!IS_DEBUG) {
     // Production optimizations
     webpackConfig.plugins.push(new webpack.optimize.UglifyJsPlugin());
@@ -160,8 +164,19 @@ function compile(target, file, webpackConfig) {
 
   Meteor.wrapAsync(done => {
     compilers[target].run(function(err, stats) {
-      if (stats && stats.hasErrors()) {
-        errors = stats.toJson({ errorDetails: true }).errors;
+      if (stats) {
+        if (stats.hasErrors()) {
+          errors = stats.toJson({ errorDetails: true }).errors;
+        }
+
+        // Save the chunk file names in the private folder of your project
+        if (target === 'web') {
+          if (!Plugin.fs.existsSync(CWD + '/private')) {
+            Plugin.fs.mkdirSync(CWD + '/private');
+          }
+
+          Plugin.fs.writeFileSync(CWD + `/private/webpack.stats.json`, JSON.stringify(stats.toJson({ chunks: true })));
+        }
       }
 
       if (err) {
@@ -184,7 +199,7 @@ function compile(target, file, webpackConfig) {
     }
   } else {
     const outputPath = webpackConfig.output.path + '/' + webpackConfig.output.filename;
-    const sourceMapPath = '/memory/webpack/' + target + '.js.map';
+    const sourceMapPath = `/memory/webpack/${target}.js.map`;
 
     // We have to fix the source map until Meteor update source-map:
     // https://github.com/meteor/meteor/pull/5411
