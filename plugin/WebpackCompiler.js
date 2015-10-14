@@ -299,21 +299,21 @@ function addAssets(target, file, fs) {
 }
 
 function compileDevServer(target, files, webpackConfig) {
+  const file = files[files.length - 1];
+
   if (webpackConfig.devServer) {
     file.addJavaScript({
       path: 'webpack.conf.js',
       data: '__WebpackDevServerConfig__ = ' + JSON.stringify(webpackConfig.devServer) + ';'
     });
   }
-  
+
   if (configHashes[target] && _.every(files, file => configHashes[target][file.getSourceHash()])) {
     return;
   }
 
   configHashes[target] = {};
   files.forEach(file => { configHashes[target][file.getSourceHash()] = true; });
-
-  const file = files[files.length - 1];
 
   if (!devServerApp) {
     devServerApp = connect();
