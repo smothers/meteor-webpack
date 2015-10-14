@@ -72,11 +72,11 @@ function readWebpackConfig(webpackConfig, target, file, filePath, data) {
     if (module === 'webpack') {
       return Npm.require(module);
     }
-    
+
     if (module === 'fs') {
       return Plugin.fs;
     }
-    
+
     if (module === 'path') {
       return Plugin.path;
     }
@@ -260,7 +260,7 @@ function compile(target, files, webpackConfig) {
 
     let sourceMapData;
     let sourceMap;
-    
+
     // In case the source map isn't in a file
     try {
       sourceMapData = fs.readFileSync(sourceMapPath);
@@ -299,6 +299,13 @@ function addAssets(target, file, fs) {
 }
 
 function compileDevServer(target, files, webpackConfig) {
+  if (webpackConfig.devServer) {
+    file.addJavaScript({
+      path: 'webpack.conf.js',
+      data: '__WebpackDevServerConfig__ = ' + JSON.stringify(webpackConfig.devServer) + ';'
+    });
+  }
+  
   if (configHashes[target] && _.every(files, file => configHashes[target][file.getSourceHash()])) {
     return;
   }
@@ -307,13 +314,6 @@ function compileDevServer(target, files, webpackConfig) {
   files.forEach(file => { configHashes[target][file.getSourceHash()] = true; });
 
   const file = files[files.length - 1];
-
-  if (webpackConfig.devServer) {
-    file.addJavaScript({
-      path: 'webpack.conf.js',
-      data: '__WebpackDevServerConfig__ = ' + JSON.stringify(webpackConfig.devServer) + ';'
-    });
-  }
 
   if (!devServerApp) {
     devServerApp = connect();
