@@ -276,7 +276,6 @@ function compileDevServer(target, files, webpackConfig) {
       data: '__WebpackDevServerConfig__ = ' + JSON.stringify(webpackConfig.devServer) + ';'
     });
   }
-  configHashes[target] = sourceHash;
 
   if (!devServerApp) {
     devServerApp = connect();
