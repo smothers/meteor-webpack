@@ -106,7 +106,7 @@ function prepareConfig(target, webpackConfig, usingDevServer) {
   }
 
   if (IS_DEBUG) {
-    webpackConfig.devtool = webpackConfig.devtool || 'cheap-eval-source-map';
+    webpackConfig.devtool = webpackConfig.devtool || 'cheap-eval-module-source-map';
 
     if (!webpackConfig.devServer) {
       webpackConfig.devServer = {};
@@ -128,9 +128,13 @@ function prepareConfig(target, webpackConfig, usingDevServer) {
 
   if (!usingDevServer) {
     if (IS_DEBUG) {
-      webpackConfig.devtool = 'cheap-source-map';
+      if (target === 'server') {
+        webpackConfig.devtool = webpackConfig.devtool || 'cheap-module-source-map';
+      } else {
+        webpackConfig.devtool = webpackConfig.devtool || 'cheap-eval-module-source-map';
+      }
     } else {
-      webpackConfig.devtool = 'source-map';
+      webpackConfig.devtool = webpackConfig.devtool || 'source-map';
     }
   }
 
