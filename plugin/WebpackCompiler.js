@@ -88,7 +88,7 @@ function readWebpackConfig(webpackConfig, target, file, filePath, data) {
 
   const Meteor = {
     isServer: target === 'server',
-    isCLient: target !== 'server',
+    isClient: target !== 'server',
     isCordova: target === 'cordova'
   };
 
