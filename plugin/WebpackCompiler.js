@@ -17,7 +17,6 @@ let configHashes = {};
 const IS_DEBUG = process.env.NODE_ENV !== 'production';
 const CWD = process.cwd();
 const ROOT_NPM = CWD + '/packages/npm-container/.npm/package/node_modules';
-const WEBPACK_PORT = process.env.WEBPACK_PORT || 3500;
 
 WebpackCompiler = class WebpackCompiler {
   processFilesForTarget(files) {
@@ -28,32 +27,41 @@ WebpackCompiler = class WebpackCompiler {
     }
 
     const platform = files[0].getArch();
-    const configFile = _.find(files, file => file.getBasename() === 'webpack.conf.js');
+    const shortName =
+      (platform.indexOf('cordova') >= 0) ?
+        'cordova' :
+        (platform.indexOf('web') >= 0) ? 'web' : 'server';
 
-    if (configFile) {
+    let webpackConfig = {};
+    const configFiles = files
+      .filter(file => file.getBasename() === 'webpack.conf.js')
+      // Sort by shallower files
+      .sort((file1, file2) => file1.getPathInPackage().split('/').length - file2.getPathInPackage().split('/').length);
+
+    if (configFiles.length === 0) {
+      throw new Error('Missing webpack.conf.js file');
+    }
+
+    configFiles.forEach(configFile => {
       const filePath = configFile.getPathInPackage();
       const data = configFile.getContentsAsString();
-      const webpackConfig = getWebpackConfig(configFile, filePath, data);
 
-      const shortName =
-        (platform.indexOf('cordova') >= 0) ?
-          'cordova' :
-          (platform.indexOf('web') >= 0) ? 'web' : 'server';
+      readWebpackConfig(webpackConfig, shortName, configFile, filePath, data);
+    });
 
-      const usingDevServer = IS_DEBUG && shortName !== 'server';
+    const usingDevServer = IS_DEBUG && shortName !== 'server';
 
-      prepareConfig(shortName, webpackConfig, usingDevServer);
+    prepareConfig(shortName, webpackConfig, usingDevServer);
 
-      if (usingDevServer) {
-        compileDevServer(shortName, configFile, webpackConfig);
-      } else {
-        compile(shortName, configFile, webpackConfig);
-      }
+    if (usingDevServer) {
+      compileDevServer(shortName, configFiles[configFiles.length - 1], webpackConfig);
+    } else {
+      compile(shortName, configFiles[configFiles.length - 1], webpackConfig);
     }
   }
 }
 
-function getWebpackConfig(file, filePath, data) {
+function readWebpackConfig(webpackConfig, target, file, filePath, data) {
   let module = { exports: {} };
   var fileSplit = filePath.split('/');
   fileSplit.pop();
@@ -61,12 +69,17 @@ function getWebpackConfig(file, filePath, data) {
   const __dirname = path.join(CWD, fileSplit.join('/'));
 
   const require = Npm.require;
+  const Meteor = {
+    isServer: target === 'server',
+    isCLient: target !== 'server',
+    isCordova: target === 'cordova'
+  };
 
   try {
     eval(data);
 
     // Make sure the entry path is relative to the correct folder
-    if (module.exports && !module.exports.context) {
+    if (module.exports && !module.exports.context && module.exports.entry) {
       module.exports.context = __dirname;
     }
   } catch(e) {
@@ -75,22 +88,33 @@ function getWebpackConfig(file, filePath, data) {
     });
   }
 
-  return module.exports;
+  webpackConfig = _.extend(webpackConfig, module.exports);
 }
 
 function prepareConfig(target, webpackConfig, usingDevServer) {
-  if (usingDevServer) {
-    webpackConfig.entry = ['webpack-hot-middleware/client?path=http://localhost:' + WEBPACK_PORT + '/__webpack_hmr', webpackConfig.entry];
-  }
-
   if (!webpackConfig.output) {
     webpackConfig.output = {};
   }
 
   if (IS_DEBUG) {
     webpackConfig.devtool = webpackConfig.devtool || 'cheap-eval-source-map';
+
+    if (!webpackConfig.devServer) {
+      webpackConfig.devServer = {};
+    }
+
+    webpackConfig.devServer.protocol = webpackConfig.devServer.protocol || 'http:';
+    webpackConfig.devServer.host = webpackConfig.devServer.host || 'localhost';
+    webpackConfig.devServer.port = webpackConfig.devServer.port || 3500;
   } else {
     webpackConfig.devtool = 'source-map';
+  }
+
+  if (usingDevServer) {
+    webpackConfig.entry = [
+      'webpack-hot-middleware/client?path=' + webpackConfig.devServer.protocol + '//' + webpackConfig.devServer.host + ':' + webpackConfig.devServer.port + '/__webpack_hmr',
+      webpackConfig.entry
+    ];
   }
 
   if (!usingDevServer) {
@@ -102,7 +126,7 @@ function prepareConfig(target, webpackConfig, usingDevServer) {
   }
 
   webpackConfig.output.path = '/memory/webpack';
-  webpackConfig.output.publicPath = IS_DEBUG ? 'http://localhost:' + WEBPACK_PORT + '/assets/' : '/assets/';
+  webpackConfig.output.publicPath = IS_DEBUG ? webpackConfig.devServer.protocol + '//' + webpackConfig.devServer.host + ':' + webpackConfig.devServer.port + '/assets/' : '/assets/';
   webpackConfig.output.filename = target + '.js';
 
   if (!webpackConfig.resolve) {
@@ -131,10 +155,6 @@ function prepareConfig(target, webpackConfig, usingDevServer) {
     'Meteor.isServer': JSON.stringify(target === 'server'),
     'Meteor.isCordova': JSON.stringify(target === 'cordova')
   }));
-
-  if (target === 'web') {
-    webpackConfig.plugins.push(new webpack.optimize.CommonsChunkPlugin('common', `common.${target}.js`));
-  }
 
   if (!IS_DEBUG) {
     // Production optimizations
@@ -246,13 +266,19 @@ function compileDevServer(target, file, webpackConfig) {
     return;
   }
 
+  if (webpackConfig.devServer) {
+    file.addJavaScript({
+      path: 'webpack.conf.js',
+      data: '__WebpackDevServerConfig__ = ' + JSON.stringify(webpackConfig.devServer) + ';'
+    });
+  }
   configHashes[target] = sourceHash;
 
   if (!devServerApp) {
     devServerApp = connect();
     devServerApp.use(cors());
 
-    http.createServer(devServerApp).listen(WEBPACK_PORT);
+    http.createServer(devServerApp).listen(webpackConfig.devServer.port);
   }
 
   if (devServerMiddleware[target]) {
