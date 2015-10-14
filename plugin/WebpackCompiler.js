@@ -143,14 +143,26 @@ function prepareConfig(target, webpackConfig, usingDevServer) {
   }
 
   // Use meteorhacks:npm to get packages from NPM
-  webpackConfig.resolve.root = ROOT_NPM;
+  if (typeof webpackConfig.resolve.root === 'string') {
+    webpackConfig.resolve.root = [webpackConfig.resolve.root, ROOT_NPM];
+  } else if (typeof webpackConfig.resolve.root === 'object' && Array.isArray(webpackConfig.resolve.root)) {
+    webpackConfig.resolve.root.push(ROOT_NPM);
+  } else {
+    webpackConfig.resolve.root = ROOT_NPM;
+  }
 
   if (!webpackConfig.resolveLoader) {
     webpackConfig.resolveLoader = {};
   }
 
   // Same for the loaders
-  webpackConfig.resolveLoader.root = ROOT_NPM;
+  if (typeof webpackConfig.resolveLoader.root === 'string') {
+    webpackConfig.resolveLoader.root = [webpackConfig.resolveLoader.root, ROOT_NPM];
+  } else if (typeof webpackConfig.resolveLoader.root === 'object' && Array.isArray(webpackConfig.resolveLoader.root)) {
+    webpackConfig.resolveLoader.root.push(ROOT_NPM);
+  } else {
+    webpackConfig.resolveLoader.root = ROOT_NPM;
+  }
 
   if (!webpackConfig.plugins) {
     webpackConfig.plugins = [];
