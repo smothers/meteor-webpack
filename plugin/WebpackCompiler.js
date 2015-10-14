@@ -72,6 +72,14 @@ function readWebpackConfig(webpackConfig, target, file, filePath, data) {
     if (module === 'webpack') {
       return Npm.require(module);
     }
+    
+    if (module === 'fs') {
+      return Plugin.fs;
+    }
+    
+    if (module === 'path') {
+      return Plugin.path;
+    }
 
     // We have to get to the root of your disk first, Npm.require is a bitch with absolute path
     // Who's seriously working deeper than 20 directories? :-)
@@ -116,7 +124,7 @@ function prepareConfig(target, webpackConfig, usingDevServer) {
     webpackConfig.devServer.host = webpackConfig.devServer.host || 'localhost';
     webpackConfig.devServer.port = webpackConfig.devServer.port || 3500;
   } else {
-    webpackConfig.devtool = 'source-map';
+    webpackConfig.devtool = webpackConfig.devtool || 'source-map';
   }
 
   if (usingDevServer) {
@@ -250,8 +258,13 @@ function compile(target, files, webpackConfig) {
     // We have to fix the source map until Meteor update source-map:
     // https://github.com/meteor/meteor/pull/5411
 
-    let sourceMapData = fs.readFileSync(sourceMapPath);
+    let sourceMapData;
     let sourceMap;
+    
+    // In case the source map isn't in a file
+    try {
+      sourceMapData = fs.readFileSync(sourceMapPath);
+    } catch(e) {}
 
     if (sourceMapData) {
       sourceMap = JSON.parse(sourceMapData.toString());
