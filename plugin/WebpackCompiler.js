@@ -54,9 +54,9 @@ WebpackCompiler = class WebpackCompiler {
     prepareConfig(shortName, webpackConfig, usingDevServer);
 
     if (usingDevServer) {
-      compileDevServer(shortName, configFiles[configFiles.length - 1], webpackConfig);
+      compileDevServer(shortName, configFiles, webpackConfig);
     } else {
-      compile(shortName, configFiles[configFiles.length - 1], webpackConfig);
+      compile(shortName, configFiles, webpackConfig);
     }
   }
 }
@@ -170,15 +170,16 @@ function prepareConfig(target, webpackConfig, usingDevServer) {
 
 const compilers = {};
 
-function compile(target, file, webpackConfig) {
-  const sourceHash = file.getSourceHash();
-
-  if (sourceHash !== configHashes[target]) {
-    configHashes[target] = sourceHash;
+function compile(target, files, webpackConfig) {
+  if (!configHashes[target] || _.some(files, file => !configHashes[target][file.getSourceHash()])) {
     compilers[target] = new webpack(webpackConfig);
     compilers[target].outputFileSystem = new MemoryFS();
+
+    configHashes[target] = {};
+    files.forEach(file => { configHashes[target][file.getSourceHash()] = true; });
   }
 
+  const file = files[files.length - 1];
   const fs = compilers[target].outputFileSystem;
   let errors = null;
 
@@ -259,12 +260,15 @@ function addAssets(target, file, fs) {
   }
 }
 
-function compileDevServer(target, file, webpackConfig) {
-  const sourceHash = file.getSourceHash();
-
-  if (sourceHash === configHashes[target]) {
+function compileDevServer(target, files, webpackConfig) {
+  if (configHashes[target] && _.every(files, file => configHashes[target][file.getSourceHash()])) {
     return;
   }
+
+  configHashes[target] = {};
+  files.forEach(file => { configHashes[target][file.getSourceHash()] = true; });
+
+  const file = files[files.length - 1];
 
   if (webpackConfig.devServer) {
     file.addJavaScript({
