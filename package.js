@@ -13,6 +13,7 @@ Package.registerBuildPlugin({
       'ecmascript@0.1.5'
     ],
     sources: [
+      'plugin/WebpackDevMiddleware.js',
       'plugin/WebpackSourceMapFix.js',
       'plugin/WebpackCompiler.js',
       'plugin/webpack-plugin.js'
@@ -22,9 +23,9 @@ Package.registerBuildPlugin({
       'connect': '3.4.0',
       'cors': '2.7.1',
       'webpack': '1.12.2',
-      'webpack-dev-middleware': '1.2.0',
       'webpack-hot-middleware': '2.4.1',
-      'memory-fs': '0.2.0'
+      'memory-fs': '0.2.0',
+      'mime': '1.3.4'
     }
 });
 

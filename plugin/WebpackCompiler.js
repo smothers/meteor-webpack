@@ -309,6 +309,7 @@ function compileDevServer(target, files, webpackConfig) {
   }
 
   if (configHashes[target] && _.every(files, file => configHashes[target][file.getSourceHash()])) {
+    devServerMiddleware[target].build();
     return;
   }
 
@@ -338,15 +339,17 @@ function compileDevServer(target, files, webpackConfig) {
 
   const compiler = webpack(webpackConfig);
 
-  devServerMiddleware[target] = Npm.require('webpack-dev-middleware')(compiler, {
+  devServerMiddleware[target] = WebpackDevMiddleware(compiler, {
+    manual: true,
     noInfo: true,
     publicPath: webpackConfig.output.publicPath,
-    stats: { colors: true },
-    watchOptions: webpackConfig.watchOptions // {poll:true}
+    stats: { colors: true }
   });
 
   devServerHotMiddleware[target] = Npm.require('webpack-hot-middleware')(compiler);
 
   devServerApp.use(devServerMiddleware[target]);
   devServerApp.use(devServerHotMiddleware[target]);
+
+  devServerMiddleware[target].build();
 }
