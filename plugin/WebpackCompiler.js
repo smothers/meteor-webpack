@@ -21,11 +21,13 @@ const ROOT_NPM = CWD + '/packages/npm-container/.npm/package/node_modules';
 let IS_DEBUG = process.env.NODE_ENV !== 'production';
 
 WebpackCompiler = class WebpackCompiler {
-  processFilesForTarget(files, { buildMode }) {
-    if (buildMode) {
-      IS_DEBUG = buildMode !== 'production';
+  processFilesForTarget(files, options) {
+    // Waiting for the PR to be merged
+    // https://github.com/meteor/meteor/pull/5448
+    if (options) {
+      IS_DEBUG = options.buildMode !== 'production';
     }
-console.log('DEBUG?', IS_DEBUG);
+
     const packageFiles = files.filter(file => file.getPackageName() !== null);
 
     if (packageFiles && packageFiles.length > 0) {
@@ -317,7 +319,10 @@ function compileDevServer(target, files, webpackConfig) {
     // Webpack with Meteor doesn't detect file change on Windows
     // So we force the rebuild
     if (IS_WINDOWS) {
-      devServerMiddleware[target].invalidate();
+      // Meteor watch system is too fast!
+      setTimeout(() => {
+        devServerMiddleware[target].invalidate();
+      }, 100);
     }
 
     return;
@@ -359,6 +364,11 @@ function compileDevServer(target, files, webpackConfig) {
 
   devServerApp.use(devServerMiddleware[target]);
   devServerApp.use(devServerHotMiddleware[target]);
-
-  //devServerMiddleware[target].build();
 }
+
+(function checkSymbolicLink() {
+  // Babel plugins absolutely need this symbolic link to work
+  if (!fs.existsSync(CWD + '/node_modules')) {
+    fs.symlinkSync('packages/npm-container/.npm/package/node_modules', 'node_modules', 'dir');
+  }
+})();
