@@ -552,6 +552,9 @@
         }
       }
     },
+    "webpack-dev-middleware": {
+      "version": "1.2.0"
+    },
     "webpack-hot-middleware": {
       "version": "2.4.1",
       "dependencies": {

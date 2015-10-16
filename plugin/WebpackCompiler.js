@@ -15,6 +15,7 @@ let devServerHotMiddleware = {};
 let configHashes = {};
 
 const IS_DEBUG = process.env.NODE_ENV !== 'production';
+const IS_WINDOWS = process.platform === 'win32';
 const CWD = process.cwd();
 const ROOT_NPM = CWD + '/packages/npm-container/.npm/package/node_modules';
 
@@ -307,7 +308,12 @@ function compileDevServer(target, files, webpackConfig) {
   }
 
   if (configHashes[target] && _.every(files, file => configHashes[target][file.getSourceHash()])) {
-    devServerMiddleware[target].build();
+    // Webpack with Meteor doesn't detect file change on Windows
+    // So we force the rebuild
+    if (IS_WINDOWS) {
+      devServerMiddleware[target].invalidate();
+    }
+
     return;
   }
 
@@ -337,8 +343,7 @@ function compileDevServer(target, files, webpackConfig) {
 
   const compiler = webpack(webpackConfig);
 
-  devServerMiddleware[target] = WebpackDevMiddleware(compiler, {
-    manual: true,
+  devServerMiddleware[target] = Npm.require('webpack-dev-middleware')(compiler, {
     noInfo: true,
     publicPath: webpackConfig.output.publicPath,
     stats: { colors: true }
@@ -349,5 +354,5 @@ function compileDevServer(target, files, webpackConfig) {
   devServerApp.use(devServerMiddleware[target]);
   devServerApp.use(devServerHotMiddleware[target]);
 
-  devServerMiddleware[target].build();
+  //devServerMiddleware[target].build();
 }
