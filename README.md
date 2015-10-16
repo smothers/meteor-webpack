@@ -75,12 +75,3 @@ If you would like to create your own from scratch, here are the steps.
     meteor add-platform ios
     meteor add-platform android
     ```
-
-# Troubleshooting
-
-## Module build failed: ReferenceError: Unknown plugin "react-transform"
-It seems like the babel plugins are not looking into the correct directory and their is no setting to fix that. However, what you can do is create a symbolic link in your project root to the correct folder:
-
-`ln -s packages/npm-container/.npm/package/node_modules`
-
-*We are going to remove this step once we have a fix*
