@@ -1,6 +1,6 @@
 Package.describe({
     name: 'webpack:webpack',
-    version: '0.1.10',
+    version: '0.1.11',
     summary: 'Seamlessly integrate Webpack with Meteor build system',
     git: 'https://github.com/thereactivestack/meteor-webpack.git',
     documentation: 'README.md'
@@ -10,7 +10,8 @@ Package.registerBuildPlugin({
     name: 'webpack:webpack',
     use: [
       'meteor',
-      'ecmascript@0.1.5'
+      'ecmascript@0.1.5',
+      'webpack:npmworkaround@0.1.0'
     ],
     sources: [
       'plugin/WebpackDevMiddleware.js',

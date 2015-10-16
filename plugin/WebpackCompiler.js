@@ -81,9 +81,7 @@ function readWebpackConfig(webpackConfig, target, file, filePath, data) {
       return Plugin.path;
     }
 
-    // We have to get to the root of your disk first, Npm.require is a bitch with absolute path
-    // Who's seriously working deeper than 20 directories? :-)
-    return Npm.require('../../../../../../../../../../../../../../../../../../../../' + ROOT_NPM + '/' + module);
+    return NpmWorkaround.require(ROOT_NPM + '/' + module);
   };
 
   const Meteor = {
