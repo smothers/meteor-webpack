@@ -7,4 +7,4 @@ Plugin.registerCompiler({
   filenames: [
     'webpack.conf.js'
   ]
-}, x=> new WebpackCompiler);
+}, () => new WebpackCompiler());

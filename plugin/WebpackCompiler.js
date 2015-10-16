@@ -14,13 +14,18 @@ let devServerMiddleware = {};
 let devServerHotMiddleware = {};
 let configHashes = {};
 
-const IS_DEBUG = process.env.NODE_ENV !== 'production';
 const IS_WINDOWS = process.platform === 'win32';
 const CWD = process.cwd();
 const ROOT_NPM = CWD + '/packages/npm-container/.npm/package/node_modules';
 
+let IS_DEBUG = process.env.NODE_ENV !== 'production';
+
 WebpackCompiler = class WebpackCompiler {
-  processFilesForTarget(files) {
+  processFilesForTarget(files, { buildMode }) {
+    if (buildMode) {
+      IS_DEBUG = buildMode !== 'production';
+    }
+console.log('DEBUG?', IS_DEBUG);
     const packageFiles = files.filter(file => file.getPackageName() !== null);
 
     if (packageFiles && packageFiles.length > 0) {
@@ -68,6 +73,7 @@ function readWebpackConfig(webpackConfig, target, file, filePath, data) {
   fileSplit.pop();
 
   const __dirname = path.join(CWD, fileSplit.join('/'));
+  const process = { env: { 'NODE_ENV': IS_DEBUG ? 'development' : 'production' } };
 
   const require = module => {
     if (module === 'webpack') {
