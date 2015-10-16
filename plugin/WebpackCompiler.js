@@ -367,7 +367,7 @@ function compileDevServer(target, files, webpackConfig) {
   devServerApp.use(devServerHotMiddleware[target]);
 }
 
-(function checkSymbolicLink() {
+function checkSymbolicLink() {
   // Babel plugins absolutely need this symbolic link to work
   if (!fs.existsSync(CWD + '/node_modules')) {
     try {
@@ -379,4 +379,6 @@ function compileDevServer(target, files, webpackConfig) {
       process.exit(1);
     }
   }
-})();
+}
+
+checkSymbolicLink();
