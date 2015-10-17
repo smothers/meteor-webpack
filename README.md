@@ -75,3 +75,6 @@ If you would like to create your own from scratch, here are the steps.
     meteor add-platform ios
     meteor add-platform android
     ```
+
+## Startup
+If you need to run code in Meteor before the startup, you can do that if you name your file `meteor.startup.js`.

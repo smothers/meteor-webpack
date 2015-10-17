@@ -68,7 +68,7 @@ WebpackCompiler = class WebpackCompiler {
     }
 
     // Every startup.js files are sent directly to Meteor
-    files.filter(file => file.getBasename() === 'startup.js').forEach(file => {
+    files.filter(file => file.getBasename() === 'meteor.startup.js').forEach(file => {
       file.addJavaScript({
         path: file.getPathInPackage(),
         data: file.getContentsAsString()
