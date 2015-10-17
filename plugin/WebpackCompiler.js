@@ -378,13 +378,27 @@ function compileDevServer(target, files, webpackConfig) {
 function checkSymbolicLink() {
   // Babel plugins absolutely need this symbolic link to work
   if (!fs.existsSync(CWD + '/node_modules')) {
+    if (!fs.existsSync(CWD + '/packages/npm-container')) {
+      console.log('-- Webpack Error! -- Your project is missing the meteorhacks:npm package');
+      console.log('You have to install the package and run Meteor once to get it installed');
+      return;
+    }
+
+    if (!fs.existsSync(CWD + '/packages/npm-container/.npm/package/node_modules')) {
+      fs.mkdirSync(CWD + '/packages/npm-container/.npm/package/node_modules');
+    }
+
     try {
       fs.symlinkSync('packages/npm-container/.npm/package/node_modules', 'node_modules', 'dir');
     } catch(e) {
-      console.log('-- Webpack Error! -- It needs sufficient rights to create a symbolic link in your project');
-      console.log('You might need to run meteor once with administrator rights or give your user the rights:');
-      console.log('http://superuser.com/questions/104845/permission-to-make-symbolic-links-in-windows-7');
-      process.exit(1);
+      if (IS_WINDOWS) {
+        console.log('-- Webpack Error! -- It needs sufficient rights to create a symbolic link in your project');
+        console.log('You might need to run meteor once with administrator rights or give your user the rights:');
+        console.log('http://superuser.com/questions/104845/permission-to-make-symbolic-links-in-windows-7');
+        process.exit(1);
+      }
+
+      throw e;
     }
   }
 }
