@@ -384,10 +384,6 @@ function checkSymbolicLink() {
       return;
     }
 
-    if (!fs.existsSync(CWD + '/packages/npm-container/.npm/package/node_modules')) {
-      fs.mkdirSync(CWD + '/packages/npm-container/.npm/package/node_modules');
-    }
-
     try {
       fs.symlinkSync('packages/npm-container/.npm/package/node_modules', 'node_modules', 'dir');
     } catch(e) {
