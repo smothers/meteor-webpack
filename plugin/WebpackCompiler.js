@@ -66,6 +66,14 @@ WebpackCompiler = class WebpackCompiler {
     } else {
       compile(shortName, configFiles, webpackConfig);
     }
+
+    // Every startup.js files are sent directly to Meteor
+    files.filter(file => file.getBasename() === 'startup.js').forEach(file => {
+      file.addJavaScript({
+        path: file.getPathInPackage(),
+        data: file.getContentsAsString()
+      });
+    });
   }
 }
 
