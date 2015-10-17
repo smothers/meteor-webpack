@@ -392,9 +392,9 @@ function checkSymbolicLink() {
         console.log('You might need to run meteor once with administrator rights or give your user the rights:');
         console.log('http://superuser.com/questions/104845/permission-to-make-symbolic-links-in-windows-7');
         process.exit(1);
+      } else {
+        console.log('-- Webpack Error! -- Cannot create symbolic link for node_modules');
       }
-
-      throw e;
     }
   }
 }
