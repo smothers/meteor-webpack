@@ -78,3 +78,5 @@ If you would like to create your own from scratch, here are the steps.
 
 ## Startup
 If you need to run code in Meteor before the startup, you can do that if you name your file `meteor.startup.js`.
+
+Calling `FlowRouter.wait()` is a great example of things you might want to do.
