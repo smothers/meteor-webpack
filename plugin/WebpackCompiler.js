@@ -13,6 +13,7 @@ let devServerApp = null;
 let devServerMiddleware = {};
 let devServerHotMiddleware = {};
 let configHashes = {};
+let webpackStats = null;
 
 const IS_WINDOWS = process.platform === 'win32';
 const CWD = process.cwd();
@@ -240,11 +241,14 @@ function compile(target, files, webpackConfig) {
 
         // Save the chunk file names in the private folder of your project
         if (target === 'web') {
-          if (!Plugin.fs.existsSync(CWD + '/private')) {
-            Plugin.fs.mkdirSync(CWD + '/private');
-          }
+          webpackStats = stats.toJson({ chunks: true });
 
-          Plugin.fs.writeFileSync(CWD + `/private/webpack.stats.json`, JSON.stringify(stats.toJson({ chunks: true })));
+          // Only keep what we need for code splitting
+          for (var key in webpackStats) {
+            if (key !== 'assetsByChunkName' && key !== 'publicPath') {
+              delete webpackStats[key];
+            }
+          }
         }
       }
 
@@ -286,9 +290,15 @@ function compile(target, files, webpackConfig) {
       WebpackSourceMapFix(sourceMap);
     }
 
+    let data = fs.readFileSync(outputPath).toString();
+
+    if (target === 'server') {
+      data = 'WebpackStats = ' + JSON.stringify(webpackStats) + ';\n' + data;
+    }
+
     file.addJavaScript({
       path: target + '.js',
-      data: fs.readFileSync(outputPath).toString(),
+      data,
       sourceMap
     });
 
