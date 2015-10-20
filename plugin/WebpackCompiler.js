@@ -16,7 +16,7 @@ let configHashes = {};
 let webpackStats = null;
 
 const IS_WINDOWS = process.platform === 'win32';
-const CWD = process.cwd();
+const CWD = path.resolve('./');
 const ROOT_NPM = CWD + '/packages/npm-container/.npm/package/node_modules';
 
 // Detect production mode
