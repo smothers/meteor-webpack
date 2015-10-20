@@ -38,19 +38,16 @@ module.exports = {
 ```
 
 # Production
-To run or build in production, you need to set your environment variable NODE_ENV to production.
-
 You can use meteor run, meteor build, mup or anything working with Meteor.
 
 ## Run in production mode
-`NODE_ENV=production meteor run --production`
+`meteor run --production`
 
 ## Build for production
-`NODE_ENV=production meteor build .`
+`meteor build .`
 
-Then, you can run `bundle/main.js` without it.
-
-*We are going to remove this once we have a fix that detect Meteor production mode in a compiler*
+## Deploy with Meteor-up
+`mup deploy`
 
 # Install
 It is easier to start by cloning one of the [kickstart projects](https://github.com/thereactivestack/kickstart).

@@ -19,7 +19,11 @@ const IS_WINDOWS = process.platform === 'win32';
 const CWD = process.cwd();
 const ROOT_NPM = CWD + '/packages/npm-container/.npm/package/node_modules';
 
-let IS_DEBUG = process.env.NODE_ENV !== 'production';
+// Detect production mode
+let IS_DEBUG =
+  process.env.NODE_ENV !== 'production' &&
+  process.argv.indexOf('--production') < 0 &&
+  process.argv.indexOf('build') < 0;
 
 WebpackCompiler = class WebpackCompiler {
   processFilesForTarget(files, options) {
