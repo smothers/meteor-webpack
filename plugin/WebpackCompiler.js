@@ -7,6 +7,9 @@ const mkdirp = Npm.require('mkdirp');
 const fs = Plugin.fs;
 const path = Plugin.path;
 
+const _fs = Npm.require('fs');
+const _path = Npm.require('path');
+
 const npm = Npm.require('npm');
 const http = Npm.require('http');
 const connect = Npm.require('connect');
@@ -19,15 +22,17 @@ let configHashes = {};
 let webpackStats = null;
 
 const IS_WINDOWS = process.platform === 'win32';
-const CWD = path.resolve('./');
-const WEBPACK_NPM = CWD + '/.meteor/local/webpack-npm';
-const ROOT_WEBPACK_NPM = WEBPACK_NPM + '/node_modules';
+const CWD = _path.resolve('./');
+const WEBPACK_NPM = _path.join(CWD, '.meteor', 'local', 'webpack-npm');
+const ROOT_WEBPACK_NPM = _path.join(WEBPACK_NPM, 'node_modules');
 
 // Detect production mode
+let IS_BUILD = process.argv.indexOf('build') >= 0;
+
 let IS_DEBUG =
   process.env.NODE_ENV !== 'production' &&
   process.argv.indexOf('--production') < 0 &&
-  process.argv.indexOf('build') < 0;
+  (!IS_BUILD || process.argv.indexOf('--debug') >= 0);
 
 WebpackCompiler = class WebpackCompiler {
   processFilesForTarget(files, options) {
@@ -129,12 +134,12 @@ function runNpmInstall(target, files) {
     dependencies
   };
 
-  fs.writeFileSync(WEBPACK_NPM + '/package.json', JSON.stringify(npmPackage));
+  fs.writeFileSync(_path.join(WEBPACK_NPM, '/package.json'), JSON.stringify(npmPackage));
 
   console.log('Installing NPM dependencies for the ' + target + ' bundle...');
 
   process.chdir(WEBPACK_NPM);
-  const { code } = shell.exec(ROOT_WEBPACK_NPM + '/npm/bin/npm-cli.js install --quiet');
+  const { code } = shell.exec(_path.join(ROOT_WEBPACK_NPM, 'npm', 'bin', 'npm-cli.js') + ' install --quiet');
   process.chdir(CWD);
 
   if (code !== 0) {
@@ -152,7 +157,7 @@ function runWebpack(shortName, configFiles) {
     readWebpackConfig(webpackConfig, shortName, configFile, filePath, data);
   });
 
-  const usingDevServer = IS_DEBUG && shortName !== 'server';
+  const usingDevServer = IS_DEBUG && !IS_BUILD && shortName !== 'server';
 
   prepareConfig(shortName, webpackConfig, usingDevServer);
 
