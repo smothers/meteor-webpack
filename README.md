@@ -37,6 +37,33 @@ module.exports = {
 };
 ```
 
+# NPM packages
+You can define your NPM dependencies by using one (or multiple) webpack.packages.json. Then, you can require or import them within your code like a regular Webpack project: `import ReactMixin from 'react-mixin';`.
+
+This is strictly for packages that can be bundled with your application. If it needs to access the server file system or execute a binary at runtime (like PhantomJS), you must use Meteor.npmRequire with `meteorhacks:npm`.
+
+webpack.packages.json:
+```
+{
+  "babel": "^5.8.23",
+  "react-mixin": "^3.0.0",
+
+  "babel-loader": "^5.3.2",
+  "null-loader": "^0.1.1",
+  "url-loader": "^0.5.6",
+  "file-loader": "^0.8.4",
+  "style-loader": "^0.12.4",
+  "css-loader": "^0.19.0",
+  "less-loader": "^2.2.1",
+  "style-collector-loader": "^0.1.0",
+
+  "babel-plugin-react-transform": "^1.1.1",
+  "react-transform-hmr": "^1.0.1",
+  "react-transform-catch-errors": "^1.0.0",
+  "redbox-react": "^1.1.1"
+}
+```
+
 # Production
 You can use meteor run, meteor build, mup or anything working with Meteor.
 

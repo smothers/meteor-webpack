@@ -1,6 +1,6 @@
 Package.describe({
     name: 'webpack:webpack',
-    version: '0.1.20',
+    version: '0.2.0',
     summary: 'Seamlessly integrate Webpack with Meteor build system',
     git: 'https://github.com/thereactivestack/meteor-webpack.git',
     documentation: 'README.md'
@@ -22,11 +22,14 @@ Package.registerBuildPlugin({
       'underscore': '1.8.3',
       'connect': '3.4.0',
       'cors': '2.7.1',
+      'npm': '3.3.8',
       'webpack': '1.12.2',
       'webpack-dev-middleware': '1.2.0',
       'webpack-hot-middleware': '2.4.1',
       'memory-fs': '0.2.0',
-      'mime': '1.3.4'
+      'mime': '1.3.4',
+      'shelljs': '0.5.3',
+      'mkdirp': '0.5.1'
     }
 });
 

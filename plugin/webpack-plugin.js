@@ -5,6 +5,7 @@ Plugin.registerCompiler({
     'jsx'
   ],
   filenames: [
-    'webpack.conf.js'
+    'webpack.conf.js',
+    'webpack.packages.json'
   ]
 }, () => new WebpackCompiler());
