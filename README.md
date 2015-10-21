@@ -85,10 +85,9 @@ If you would like to create your own from scratch, here are the steps.
     ```bash
     meteor remove ecmascript # webpack will take care of it, you can't keep both
     meteor add webpack:webpack
-    meteor add meteorhacks:npm # you absolutely need this to get the relevant NPM modules
     ```
 
-1. Add the NPM modules your webpack config will need.
+1. Add the NPM modules your webpack config will need in `webpack.packages.json`.
 
 1. Add `webpack.conf.js` and your client entry file in a client folder.
 

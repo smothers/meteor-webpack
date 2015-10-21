@@ -131,7 +131,7 @@ function runNpmInstall(target, files) {
 
   fs.writeFileSync(WEBPACK_NPM + '/package.json', JSON.stringify(npmPackage));
 
-  console.log('Installing NPM dependencies for ' + target + ' bundle...');
+  console.log('Installing NPM dependencies for the ' + target + ' bundle...');
 
   process.chdir(WEBPACK_NPM);
   const { code } = shell.exec(ROOT_WEBPACK_NPM + '/npm/bin/npm-cli.js install --quiet');
