@@ -138,8 +138,10 @@ function runNpmInstall(target, files) {
 
   console.log('Installing NPM dependencies for the ' + target + ' bundle...');
 
+  const NPM_CLI = _path.join(ROOT_WEBPACK_NPM, 'npm', 'bin', IS_WINDOWS ? 'npm.cmd' : 'npm')
+
   process.chdir(WEBPACK_NPM);
-  const { code } = shell.exec(_path.join(ROOT_WEBPACK_NPM, 'npm', 'bin', 'npm-cli.js') + ' install --quiet');
+  const { code } = shell.exec(NPM_CLI + ' install --quiet');
   process.chdir(CWD);
 
   if (code !== 0) {
