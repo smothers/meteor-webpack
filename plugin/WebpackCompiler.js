@@ -175,7 +175,7 @@ function readWebpackConfig(webpackConfig, target, file, filePath, data) {
   var fileSplit = filePath.split('/');
   fileSplit.pop();
 
-  const __dirname = path.join(CWD, fileSplit.join('/'));
+  const __dirname = _path.join(CWD, fileSplit.join(_path.sep));
   const process = { env: { 'NODE_ENV': IS_DEBUG ? 'development' : 'production' } };
 
   const require = module => {
@@ -184,11 +184,11 @@ function readWebpackConfig(webpackConfig, target, file, filePath, data) {
     }
 
     if (module === 'fs') {
-      return Plugin.fs;
+      return _fs;
     }
 
     if (module === 'path') {
-      return Plugin.path;
+      return _path;
     }
 
     try {
@@ -367,7 +367,7 @@ function compile(target, files, webpackConfig) {
       });
     }
   } else {
-    const outputPath = webpackConfig.output.path + '/' + webpackConfig.output.filename;
+    const outputPath = path.join(webpackConfig.output.path, webpackConfig.output.filename);
     const sourceMapPath = `/memory/webpack/${target}.js.map`;
 
     // We have to fix the source map until Meteor update source-map:
@@ -430,12 +430,7 @@ function compileDevServer(target, files, webpackConfig) {
   }
 
   if (configHashes[target] && _.every(files, file => configHashes[target][file.getSourceHash()])) {
-    // Webpack with Meteor doesn't detect file change on Windows
-    // So we force the rebuild
-    if (IS_WINDOWS) {
-      devServerMiddleware[target].invalidate();
-    }
-
+    // Webpack is already watching the files, only restart if the config has changed
     return;
   }
 
