@@ -26,13 +26,17 @@ const CWD = _path.resolve('./');
 const WEBPACK_NPM = _path.join(CWD, '.meteor', 'local', 'webpack-npm');
 const ROOT_WEBPACK_NPM = _path.join(WEBPACK_NPM, 'node_modules');
 
+const argv = process.argv.map(arg => arg.toLowerCase());
+
 // Detect production mode
-let IS_BUILD = process.argv.indexOf('build') >= 0;
+let IS_BUILD =
+  argv.indexOf('build') >= 0 ||
+  argv.indexOf('deploy') >= 0;;
 
 let IS_DEBUG =
   process.env.NODE_ENV !== 'production' &&
-  process.argv.indexOf('--production') < 0 &&
-  (!IS_BUILD || process.argv.indexOf('--debug') >= 0);
+  argv.indexOf('--production') < 0 &&
+  (!IS_BUILD || argv.indexOf('--debug') >= 0);
 
 WebpackCompiler = class WebpackCompiler {
   processFilesForTarget(files, options) {
