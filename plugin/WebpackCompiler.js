@@ -250,10 +250,10 @@ function prepareConfig(target, webpackConfig, usingDevServer) {
   }
 
   if (usingDevServer) {
-    webpackConfig.entry = [
+    webpackConfig.entry = [].concat(
       'webpack-hot-middleware/client?path=' + webpackConfig.devServer.protocol + '//' + webpackConfig.devServer.host + ':' + webpackConfig.devServer.port + '/__webpack_hmr',
       webpackConfig.entry
-    ];
+    );
   }
 
   if (!usingDevServer) {
