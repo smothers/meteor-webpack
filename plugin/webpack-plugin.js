@@ -1,8 +1,7 @@
 Plugin.registerCompiler({
   extensions: [
     'import.css', // Ignore CSS files that are going to be bundled with components
-    'js', // make sure js files are bundled with Webpack
-    'jsx'
+    'js', 'jsx', 'ts', 'tsx' // watch JavaScript and TypeScript files
   ],
   filenames: [
     'webpack.conf.js',
