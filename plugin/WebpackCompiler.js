@@ -236,7 +236,11 @@ function prepareConfig(target, webpackConfig, usingDevServer) {
   }
 
   if (IS_DEBUG) {
-    webpackConfig.devtool = webpackConfig.devtool || 'cheap-eval-module-source-map';
+    if (target === 'server') {
+      webpackConfig.devtool = webpackConfig.devtool || 'source-map';
+    } else {
+      webpackConfig.devtool = webpackConfig.devtool || 'cheap-eval-module-source-map';
+    }
 
     if (!webpackConfig.devServer) {
       webpackConfig.devServer = {};
@@ -254,18 +258,6 @@ function prepareConfig(target, webpackConfig, usingDevServer) {
       'webpack-hot-middleware/client?path=' + webpackConfig.devServer.protocol + '//' + webpackConfig.devServer.host + ':' + webpackConfig.devServer.port + '/__webpack_hmr',
       webpackConfig.entry
     );
-  }
-
-  if (!usingDevServer) {
-    if (IS_DEBUG) {
-      if (target === 'server') {
-        webpackConfig.devtool = webpackConfig.devtool || 'cheap-module-source-map';
-      } else {
-        webpackConfig.devtool = webpackConfig.devtool || 'cheap-eval-module-source-map';
-      }
-    } else {
-      webpackConfig.devtool = webpackConfig.devtool || 'source-map';
-    }
   }
 
   webpackConfig.output.path = '/memory/webpack';
