@@ -31,7 +31,8 @@ const argv = process.argv.map(arg => arg.toLowerCase());
 // Detect production mode
 let IS_BUILD =
   argv.indexOf('build') >= 0 ||
-  argv.indexOf('deploy') >= 0;;
+  argv.indexOf('bundle') >= 0 ||
+  argv.indexOf('deploy') >= 0;
 
 let IS_DEBUG =
   process.env.NODE_ENV !== 'production' &&
