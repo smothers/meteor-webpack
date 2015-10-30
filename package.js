@@ -38,4 +38,7 @@ Package.onUse(function(api) {
 
     api.use('isobuild:compiler-plugin@1.0.0');
     api.use('webpack:reload@0.1.4');
+
+    // Meteor polyfill for ecmascript
+    api.imply('ecmascript-runtime@0.2.6')
 });
