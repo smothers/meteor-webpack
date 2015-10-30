@@ -106,7 +106,7 @@ function runNpmInstall(target, files) {
   // Fix peer dependencies for react and webpack
   // webpack-hot-middleware is required for HMR
   let dependencies = {
-    'react': '~0.13.3',
+    'react': '~0.14.1',
     'webpack': '~1.12.2',
     'webpack-hot-middleware': '^2.4.1'
   };
