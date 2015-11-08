@@ -25,6 +25,7 @@ const IS_WINDOWS = process.platform === 'win32';
 const CWD = _path.resolve('./');
 const WEBPACK_NPM = _path.join(CWD, '.meteor', 'local', 'webpack-npm');
 const ROOT_WEBPACK_NPM = _path.join(WEBPACK_NPM, 'node_modules');
+const PROCESS_ENV = process.env;
 
 const argv = process.argv.map(arg => arg.toLowerCase());
 
@@ -35,7 +36,7 @@ let IS_BUILD =
   argv.indexOf('deploy') >= 0;
 
 let IS_DEBUG =
-  process.env.NODE_ENV !== 'production' &&
+  PROCESS_ENV.NODE_ENV !== 'production' &&
   argv.indexOf('--production') < 0 &&
   (!IS_BUILD || argv.indexOf('--debug') >= 0);
 
@@ -170,7 +171,10 @@ function runWebpack(shortName, configFiles) {
     readWebpackConfig(webpackConfig, shortName, configFile, filePath, data);
   });
 
-  const usingDevServer = IS_DEBUG && !IS_BUILD && shortName !== 'server';
+  const usingDevServer =
+    IS_DEBUG && !IS_BUILD &&
+    shortName !== 'server' &&
+    !PROCESS_ENV.IS_MIRROR; // Integration tests (velocity) should not use dev server
 
   prepareConfig(shortName, webpackConfig, usingDevServer);
 
@@ -187,7 +191,9 @@ function readWebpackConfig(webpackConfig, target, file, filePath, data) {
   fileSplit.pop();
 
   const __dirname = _path.join(CWD, fileSplit.join(_path.sep));
-  const process = { env: { 'NODE_ENV': IS_DEBUG ? 'development' : 'production' } };
+  const process = {
+    env: _.assign({}, PROCESS_ENV, { 'NODE_ENV': IS_DEBUG ? 'development' : 'production' })
+  };
 
   const require = module => {
     if (module === 'webpack') {
@@ -297,12 +303,22 @@ function prepareConfig(target, webpackConfig, usingDevServer) {
 
   webpackConfig.plugins.unshift(new webpack.optimize.DedupePlugin());
 
-  webpackConfig.plugins.unshift(new webpack.DefinePlugin({
+  let definePlugin = {
     'process.env.NODE_ENV': JSON.stringify(IS_DEBUG ? 'development' : 'production'),
     'Meteor.isClient': JSON.stringify(target !== 'server'),
     'Meteor.isServer': JSON.stringify(target === 'server'),
     'Meteor.isCordova': JSON.stringify(target === 'cordova')
-  }));
+  };
+
+  for (let name in PROCESS_ENV) {
+    if (name === 'NODE_ENV') {
+      continue;
+    }
+
+    definePlugin['process.env.' + name] = JSON.stringify(PROCESS_ENV[name]);
+  }
+
+  webpackConfig.plugins.unshift(new webpack.DefinePlugin(definePlugin));
 
   if (!IS_DEBUG) {
     // Production optimizations

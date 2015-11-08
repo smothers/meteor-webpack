@@ -1,6 +1,6 @@
 Package.describe({
     name: 'webpack:webpack',
-    version: '0.2.9',
+    version: '0.3.0',
     summary: 'Seamlessly integrate Webpack with Meteor build system',
     git: 'https://github.com/thereactivestack/meteor-webpack.git',
     documentation: 'README.md'
@@ -37,8 +37,8 @@ Package.onUse(function(api) {
     api.versionsFrom('1.2');
 
     api.use('isobuild:compiler-plugin@1.0.0');
-    api.use('webpack:reload@0.1.4');
+    api.use('webpack:reload@0.2.0');
 
     // Meteor polyfill for ecmascript
-    api.imply('ecmascript-runtime@0.2.6')
+    api.imply('ecmascript-runtime')
 });
