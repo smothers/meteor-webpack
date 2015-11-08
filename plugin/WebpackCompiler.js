@@ -113,7 +113,14 @@ function runNpmInstall(target, files) {
   };
 
   files.forEach(file => {
-    dependencies = _.extend(dependencies, JSON.parse(file.getContentsAsString()));
+    try {
+      const deps = JSON.parse(file.getContentsAsString());
+      dependencies = _.extend(dependencies, deps);
+    } catch(e) {
+      file.error({
+        message: e.message
+      });
+    }
   });
 
   if (!dependencies['webpack-hot-middleware']) {
