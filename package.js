@@ -40,5 +40,5 @@ Package.onUse(function(api) {
     api.use('webpack:reload@0.2.0');
 
     // Meteor polyfill for ecmascript
-    api.imply('ecmascript-runtime')
+    api.imply('ecmascript-runtime@0.2.6')
 });
