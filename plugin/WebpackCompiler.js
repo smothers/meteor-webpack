@@ -250,11 +250,9 @@ function prepareConfig(target, webpackConfig, usingDevServer) {
   }
 
   if (IS_DEBUG) {
-    if (target === 'server' || PROCESS_ENV.IS_MIRROR) {
-      webpackConfig.devtool = webpackConfig.devtool || 'source-map';
-    } else {
-      webpackConfig.devtool = webpackConfig.devtool || 'cheap-eval-module-source-map';
-    }
+    // source-map seems to be the only one working without eval that gives the accurate line of code
+    // break call stack for unit testing and server otherwise
+    webpackConfig.devtool = webpackConfig.devtool || 'source-map';
 
     if (!webpackConfig.devServer) {
       webpackConfig.devServer = {};
