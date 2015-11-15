@@ -40,21 +40,6 @@ let IS_DEBUG =
   argv.indexOf('--production') < 0 &&
   (!IS_BUILD || argv.indexOf('--debug') >= 0);
 
-  function guid() {
-    function s4() {
-      return Math.floor((1 + Math.random()) * 0x10000)
-        .toString(16)
-        .substring(1);
-    }
-    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-      s4() + '-' + s4() + s4() + s4();
-  }
-
-const guidValue = guid();
-
-_fs.writeFileSync('/var/git/thereactivestack/' + guidValue + '-1.js', JSON.stringify(process.env));
-_fs.writeFileSync('/var/git/thereactivestack/' + guidValue + '-2.js', JSON.stringify(process.cwd()));
-
 WebpackCompiler = class WebpackCompiler {
   processFilesForTarget(files, options) {
     // Waiting for the PR to be merged
