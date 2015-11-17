@@ -439,10 +439,18 @@ function addAssets(target, file, fs) {
     if (asset !== target + '.js' && asset !== target + '.js.map') {
       const data = fs.readFileSync('/memory/webpack/' + asset);
 
-      file.addAsset({
-        path: 'assets/' + asset,
-        data
-      });
+      // Send CSS files to Meteor
+      if (/\.css$/.test(asset)) {
+        file.addStylesheet({
+          path: 'assets/' + asset,
+          data: data.toString()
+        });
+      } else {
+        file.addAsset({
+          path: 'assets/' + asset,
+          data
+        });
+      }
     }
   }
 }
