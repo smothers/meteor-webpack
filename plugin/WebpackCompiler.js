@@ -112,7 +112,7 @@ function runNpmInstall(target, files) {
   // webpack-hot-middleware is required for HMR
   let dependencies = {
     'react': '~0.14.1',
-    'webpack': '~1.12.2',
+    'webpack': '1.12.2', // this is the last version working correctly with ExtractTextPlugin
     'webpack-hot-middleware': '^2.4.1'
   };
 
@@ -126,10 +126,6 @@ function runNpmInstall(target, files) {
       });
     }
   });
-
-  if (!dependencies['webpack-hot-middleware']) {
-    dependencies['webpack-hot-middleware'] = '^2.4.1';
-  }
 
   let hasChanged = false;
 
