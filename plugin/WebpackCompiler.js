@@ -266,8 +266,23 @@ function prepareConfig(target, webpackConfig, usingDevServer) {
   }
 
   if (usingDevServer) {
+    let options = 'path=' + webpackConfig.devServer.protocol + '//' + webpackConfig.devServer.host + ':' + webpackConfig.devServer.port + '/__webpack_hmr';
+
+    if (webpackConfig.hotMiddleware) {
+      for (let key in webpackConfig.hotMiddleware) {
+        const val = webpackConfig.hotMiddleware[key];
+        options += '&' + key + '=';
+
+        if (typeof val === 'boolean') {
+          options += val ? 'true' : 'false';
+        } else {
+          options += val;
+        }
+      }
+    }
+
     webpackConfig.entry = [].concat(
-      'webpack-hot-middleware/client?path=' + webpackConfig.devServer.protocol + '//' + webpackConfig.devServer.host + ':' + webpackConfig.devServer.port + '/__webpack_hmr',
+      'webpack-hot-middleware/client?' + options,
       webpackConfig.entry
     );
   }
