@@ -96,7 +96,7 @@ function runNpmInstall(target, files) {
           throw err;
         }
 
-        npm.commands.install(WEBPACK_NPM, ['npm@^3.3.8'], function(err) {
+        npm.commands.install(WEBPACK_NPM, ['npm@3.5.2'], function(err) {
           if (err) {
             throw err;
           }

@@ -22,7 +22,7 @@ Package.registerBuildPlugin({
       'underscore': '1.8.3',
       'connect': '3.4.0',
       'cors': '2.7.1',
-      'npm': '3.3.8',
+      'npm': '3.5.2',
       'webpack': '1.12.2',
       'webpack-dev-middleware': '1.2.0',
       'webpack-hot-middleware': '2.4.1',
