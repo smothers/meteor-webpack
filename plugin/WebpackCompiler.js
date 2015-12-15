@@ -179,6 +179,8 @@ function runWebpack(shortName, configFiles) {
     readWebpackConfig(webpackConfig, shortName, configFile, filePath, data);
   });
 
+  generateExternals(webpackConfig, configFiles[0]._resourceSlot.packageSourceBatch.processor.unibuilds);
+
   const usingDevServer =
     IS_DEBUG && !IS_BUILD &&
     shortName !== 'server' &&
@@ -526,6 +528,47 @@ function filterFiles(files, name) {
     .filter(file => file.getBasename() === name)
     // Sort by shallower files
     .sort((file1, file2) => file1.getPathInPackage().split('/').length - file2.getPathInPackage().split('/').length);
+}
+
+function getLispCase(exportName) {
+  let result = '';
+  let lastWasUpper = false;
+
+  for (let i = 0; i < exportName.length; ++i) {
+    const isUpper = exportName[i] === exportName[i].toUpperCase();
+
+    if (i > 0 && isUpper && !lastWasUpper) {
+      result += '-';
+    }
+
+    result += exportName[i].toLowerCase();
+    lastWasUpper = isUpper;
+  }
+
+  return result;
+}
+
+function generateExternals(webpackConfig, isobuilds) {
+  webpackConfig.externals = webpackConfig.externals || {};
+
+  for (let i = 0; i < isobuilds.length; ++i) {
+    const { declaredExports } = isobuilds[i];
+
+    for (let j = 0; j < declaredExports.length; ++j) {
+      if (!declaredExports[j].testOnly) {
+        const declaredExport = declaredExports[j].name;
+        const lispCaseExport = getLispCase(declaredExport);
+
+        if (!webpackConfig.externals[declaredExport]) {
+          webpackConfig.externals[declaredExport] = declaredExport;
+        }
+
+        if (!webpackConfig.externals[lispCaseExport]) {
+          webpackConfig.externals[lispCaseExport] = declaredExport;
+        }
+      }
+    }
+  }
 }
 
 function checkSymbolicLink() {
