@@ -91,12 +91,14 @@ function runNpmInstall(target, files) {
     console.log('Installing local NPM...');
 
     Meteor.wrapAsync(function(done) {
-      npm.load({ loglevel: 'silent' }, function(err) {
+      npm.load({ loglevel: 'quiet' }, function(err) {
         if (err) {
           throw err;
         }
 
-        npm.commands.install(WEBPACK_NPM, ['npm@3.5.2'], function(err) {
+        // TODO: We have to stay on v2 until this is fixed or we get hundreds of warnings
+        // https://github.com/npm/npm/issues/10013#issuecomment-164382806
+        npm.commands.install(WEBPACK_NPM, ['npm@2.14.15'], function(err) {
           if (err) {
             throw err;
           }
@@ -160,8 +162,7 @@ function runNpmInstall(target, files) {
   const NPM_CLI = _path.join(ROOT_WEBPACK_NPM, '.bin', IS_WINDOWS ? 'npm.cmd' : 'npm')
 
   process.chdir(WEBPACK_NPM);
-  // TODO: Switch back to --quiet when the hundreds of "replacing bundled version of" warnings disappear
-  const { code } = shell.exec(NPM_CLI + ' install --silent');
+  const { code } = shell.exec(NPM_CLI + ' install --quiet');
   process.chdir(CWD);
 
   if (code !== 0) {
