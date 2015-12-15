@@ -22,10 +22,6 @@ var webpack = require('webpack');
 
 module.exports = {
   entry: './entry',
-  externals: {
-    // Add global variables you would like to import
-    'react': 'React'
-  },
   resolve: {
     extensions: ['', '.js', '.jsx', '.json']
   },
