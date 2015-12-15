@@ -549,6 +549,9 @@ function getLispCase(exportName) {
 }
 
 function generateExternals(webpackConfig, isobuilds) {
+  const packageStr = fs.readFileSync(_path.join(WEBPACK_NPM, '/package.json')).toString();
+  const npmDependencies = Object.keys(JSON.parse(packageStr).dependencies).map(dep => dep.toLowerCase());
+
   webpackConfig.externals = webpackConfig.externals || {};
 
   for (let i = 0; i < isobuilds.length; ++i) {
@@ -559,11 +562,12 @@ function generateExternals(webpackConfig, isobuilds) {
         const declaredExport = declaredExports[j].name;
         const lispCaseExport = getLispCase(declaredExport);
 
-        if (!webpackConfig.externals[declaredExport]) {
+        // Don't override a NPM module or user external
+        if (npmDependencies.indexOf(declaredExport.toLowerCase()) < 0 && !webpackConfig.externals[declaredExport]) {
           webpackConfig.externals[declaredExport] = declaredExport;
         }
 
-        if (!webpackConfig.externals[lispCaseExport]) {
+        if (npmDependencies.indexOf(lispCaseExport) < 0 && !webpackConfig.externals[lispCaseExport]) {
           webpackConfig.externals[lispCaseExport] = declaredExport;
         }
       }
