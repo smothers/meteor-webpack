@@ -160,7 +160,8 @@ function runNpmInstall(target, files) {
   const NPM_CLI = _path.join(ROOT_WEBPACK_NPM, '.bin', IS_WINDOWS ? 'npm.cmd' : 'npm')
 
   process.chdir(WEBPACK_NPM);
-  const { code } = shell.exec(NPM_CLI + ' install --quiet');
+  // TODO: Switch back to --quiet when the hundreds of "replacing bundled version of" warnings disappear
+  const { code } = shell.exec(NPM_CLI + ' install --silent');
   process.chdir(CWD);
 
   if (code !== 0) {
