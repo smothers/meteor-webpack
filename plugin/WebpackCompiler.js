@@ -550,8 +550,7 @@ function getLispCase(exportName) {
 }
 
 function generateExternals(webpackConfig, isobuilds) {
-  const packageStr = fs.readFileSync(_path.join(WEBPACK_NPM, '/package.json')).toString();
-  const npmDependencies = findAllDependencies(ROOT_WEBPACK_NPM);
+  const npmDependencies = findAllDependencies(ROOT_WEBPACK_NPM, true);
 
   webpackConfig.externals = webpackConfig.externals || {};
 
@@ -576,19 +575,20 @@ function generateExternals(webpackConfig, isobuilds) {
   }
 }
 
-function findAllDependencies(modulesPath) {
-  const modules = fs.readdirSync(modulesPath).filter(file => fs.statSync(path.join(modulesPath, file)).isDirectory());
-  let allModules = modules;
+function findAllDependencies(modulesPath, isNodeModules) {
+  const folders = fs.readdirSync(modulesPath).filter(
+    file => file[0] !== '.' && fs.statSync(path.join(modulesPath, file)).isDirectory()
+  );
 
-  modules.forEach(npmModule => {
-    const dependenciesFolder = path.join(modulesPath, npmModule, 'node_modules');
+  let modules = isNodeModules ? folders : [];
 
-    if (fs.existsSync(dependenciesFolder)) {
-      allModules = allModules.concat(findAllDependencies(dependenciesFolder));
-    }
+  folders.forEach(folder => {
+    modules = modules.concat(
+      findAllDependencies(path.join(modulesPath, folder), folder === 'node_modules')
+    );
   });
 
-  return allModules;
+  return modules;
 }
 
 function checkSymbolicLink() {
