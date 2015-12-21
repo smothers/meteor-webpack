@@ -56,22 +56,49 @@ WebpackCompiler = class WebpackCompiler {
 
     const configFiles = filterFiles(files, 'webpack.conf.js');
 
-    if (configFiles.length === 0) {
-      throw new Error('Missing webpack.conf.js file');
-    }
-
-    const platform = configFiles[0].getArch();
+    const platform = files[0].getArch();
     const shortName =
       (platform.indexOf('cordova') >= 0) ?
         'cordova' :
         (platform.indexOf('web') >= 0) ? 'web' : 'server';
 
-    // Don't need to run NPM install again on mirrors
-    if (!PROCESS_ENV.IS_MIRROR) {
-      runNpmInstall(shortName, filterFiles(files, 'webpack.packages.json'));
+    const settingsFiles = filterFiles(files, 'webpack.json');
+    const entryFile = files.find(file => /^entry\.([A-Za-z]+)$/.test(file.getBasename()));
+    const settings = readSettings(settingsFiles, shortName);
+
+    if (!entryFile && !configFiles.length) {
+      throw new Exception('Cannot find your entry or webpack config');
     }
 
-    runWebpack(shortName, configFiles);
+    let webpackConfig = {
+      entry: entryFile ? _path.join(CWD, entryFile.getPathInPackage()) : null,
+      module: {
+        loaders: []
+      },
+      plugins: [],
+      resolve: {
+        extensions: ['']
+      },
+      externals: {},
+      devServer: settings.devServer
+    };
+
+    if (settings.root) {
+      webpackConfig.resolve.root = _path.join(CWD, settings.root);
+    }
+
+    const unibuilds = files[0]._resourceSlot.packageSourceBatch.processor.unibuilds;
+    generateExternals(webpackConfig, unibuilds);
+    const configs = readPackageConfig(shortName, webpackConfig, unibuilds, settings);
+
+    // Don't need to run NPM install again on mirrors
+    if (!PROCESS_ENV.IS_MIRROR) {
+      runNpmInstall(shortName, filterFiles(files, 'webpack.packages.json'), configs.dependencies);
+    }
+
+    configs.load();
+
+    runWebpack(shortName, webpackConfig, entryFile, configFiles);
 
     // Every startup.js files are sent directly to Meteor
     files.filter(file => file.getBasename() === 'meteor.startup.js').forEach(file => {
@@ -83,9 +110,29 @@ WebpackCompiler = class WebpackCompiler {
   }
 }
 
+function readSettings(settingsFiles, platform) {
+  let settings = {};
+
+  settingsFiles.forEach(file => {
+    try {
+      const setting = JSON.parse(file.getContentsAsString());
+      settings = _.extend(settings, setting);
+    } catch(e) {
+      file.error({
+        message: e.message
+      });
+    }
+  });
+
+  settings.platform = platform;
+  settings.isDebug = IS_DEBUG;
+
+  return settings;
+}
+
 let npmPackagesCache = { web: {}, cordova: {}, server: {} };
 
-function runNpmInstall(target, files) {
+function runNpmInstall(target, files, configDependencies) {
   // Make sure NPM is installed so we can use CLI
   if (!fs.existsSync(ROOT_WEBPACK_NPM + '/npm')) {
     console.log('Installing local NPM...');
@@ -110,13 +157,12 @@ function runNpmInstall(target, files) {
   }
 
   // List the dependencies
-  // Fix peer dependencies for react and webpack
+  // Fix peer dependencies for webpack
   // webpack-hot-middleware is required for HMR
-  let dependencies = {
-    'react': '~0.14.1',
+  let dependencies = _.extend({
     'webpack': '^1.12.9',
     'webpack-hot-middleware': '^2.4.1'
-  };
+  }, configDependencies);
 
   files.forEach(file => {
     try {
@@ -170,17 +216,13 @@ function runNpmInstall(target, files) {
   }
 }
 
-function runWebpack(shortName, configFiles) {
-  let webpackConfig = {};
-
+function runWebpack(shortName, webpackConfig, entryFile, configFiles) {
   configFiles.forEach(configFile => {
     const filePath = configFile.getPathInPackage();
     const data = configFile.getContentsAsString();
 
     readWebpackConfig(webpackConfig, shortName, configFile, filePath, data);
   });
-
-  generateExternals(webpackConfig, configFiles[0]._resourceSlot.packageSourceBatch.processor.unibuilds);
 
   const usingDevServer =
     IS_DEBUG && !IS_BUILD &&
@@ -190,10 +232,76 @@ function runWebpack(shortName, configFiles) {
   prepareConfig(shortName, webpackConfig, usingDevServer);
 
   if (usingDevServer) {
-    compileDevServer(shortName, configFiles, webpackConfig);
+    compileDevServer(shortName, entryFile, configFiles, webpackConfig);
   } else {
-    compile(shortName, configFiles, webpackConfig);
+    compile(shortName, entryFile, configFiles, webpackConfig);
   }
+}
+
+function readPackageConfig(platform, webpackConfig, unibuilds, settings) {
+  let deps = {};
+  let configs = [];
+
+  for (let i = 0; i < unibuilds.length; ++i) {
+    if (unibuilds[i].uses.find(use => use.package === 'webpack:core-config')) {
+      const resource = unibuilds[i].resources.find(resource => resource.path === 'webpack.config.js');
+
+      try {
+        eval(resource.data.toString());
+        deps = _.extend(deps, dependencies(settings));
+        configs.push({ weight, config });
+      } catch(e) {
+        console.error(e);
+      }
+    }
+  }
+
+  configs = configs.sort(config => config.weight).map(config => config.config);
+
+  return {
+    dependencies: deps,
+    load: () => {
+      const require = module => {
+        if (module === 'webpack') {
+          return Npm.require(module);
+        }
+
+        if (module === 'fs') {
+          return _fs;
+        }
+
+        if (module === 'path') {
+          return _path;
+        }
+
+        try {
+          return NpmWorkaround.require(ROOT_WEBPACK_NPM + '/' + module);
+        } catch(e) {}
+
+        return NpmWorkaround.require(module);
+      };
+
+      configs.forEach(config => {
+        try {
+          const result = config(settings);
+
+          if (result.loaders) {
+            webpackConfig.module.loaders = webpackConfig.module.loaders.concat(result.loaders);
+          }
+
+          if (result.plugins) {
+            webpackConfig.plugins = webpackConfig.plugins.concat(result.plugins);
+          }
+
+          if (result.extensions) {
+            webpackConfig.resolve.extensions = webpackConfig.resolve.extensions.concat(result.extensions);
+          }
+        } catch(e) {
+          console.error(e.stack);
+        }
+      });
+    }
+  };
 }
 
 function readWebpackConfig(webpackConfig, target, file, filePath, data) {
@@ -358,16 +466,16 @@ function prepareConfig(target, webpackConfig, usingDevServer) {
 
 const compilers = {};
 
-function compile(target, files, webpackConfig) {
-  if (!configHashes[target] || _.some(files, file => !configHashes[target][file.getSourceHash()])) {
+function compile(target, entryFile, configFiles, webpackConfig) {
+  if (!configHashes[target] || _.some(configFiles, file => !configHashes[target][file.getSourceHash()])) {
     compilers[target] = new webpack(webpackConfig);
     compilers[target].outputFileSystem = new MemoryFS();
 
     configHashes[target] = {};
-    files.forEach(file => { configHashes[target][file.getSourceHash()] = true; });
+    configFiles.forEach(file => { configHashes[target][file.getSourceHash()] = true; });
   }
 
-  const file = files[files.length - 1];
+  const file = entryFile || configFiles[0];
   const fs = compilers[target].outputFileSystem;
   let errors = null;
 
@@ -470,23 +578,23 @@ function addAssets(target, file, fs) {
   }
 }
 
-function compileDevServer(target, files, webpackConfig) {
-  const file = files[files.length - 1];
-
+function compileDevServer(target, entryFile, configFiles, webpackConfig) {
   if (webpackConfig.devServer) {
+    const file = entryFile || configFiles[0];
+
     file.addJavaScript({
       path: 'webpack.conf.js',
       data: '__WebpackDevServerConfig__ = ' + JSON.stringify(webpackConfig.devServer) + ';'
     });
   }
 
-  if (configHashes[target] && _.every(files, file => configHashes[target][file.getSourceHash()])) {
+  if (configHashes[target] && configFiles && _.every(configFiles, file => configHashes[target][file.getSourceHash()])) {
     // Webpack is already watching the files, only restart if the config has changed
     return;
   }
 
   configHashes[target] = {};
-  files.forEach(file => { configHashes[target][file.getSourceHash()] = true; });
+  configFiles.forEach(file => { configHashes[target][file.getSourceHash()] = true; });
 
   if (!devServerApp) {
     devServerApp = connect();

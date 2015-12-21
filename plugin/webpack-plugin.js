@@ -4,6 +4,7 @@ Plugin.registerCompiler({
     'js', 'jsx', 'ts', 'tsx' // watch JavaScript and TypeScript files
   ],
   filenames: [
+    'webpack.json',
     'webpack.conf.js',
     'webpack.packages.json'
   ]
