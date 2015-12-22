@@ -47,6 +47,11 @@ WebpackCompiler = class WebpackCompiler {
 
     checkMigration();
 
+    if (!fs.existsSync(CWD + '/node_modules')) {
+      console.log('Please run npm install in your project folder to continue.');
+      process.exit(1);
+    }
+
     files = files.filter(file => file.getPackageName() !== 'webpack:webpack');
     const packageFiles = files.filter(file => file.getPackageName() !== null);
 
@@ -93,7 +98,7 @@ WebpackCompiler = class WebpackCompiler {
 
     // Don't need to run NPM install again on mirrors
     if (!PROCESS_ENV.IS_MIRROR) {
-      updateNpmPackages(shortName, configs.dependencies);
+      updateNpmPackages(shortName, configs);
     }
 
     configs.load();
@@ -132,20 +137,27 @@ function readSettings(settingsFiles, platform) {
 
 let npmPackagesCache = { web: {}, cordova: {}, server: {} };
 
-function updateNpmPackages(target, configDependencies) {
+function updateNpmPackages(target, configs) {
   // List the dependencies
   // Fix peer dependencies for webpack
   // webpack-hot-middleware is required for HMR
-  let dependencies = _.extend({
+
+  let dependencies = configs.dependencies;
+
+  let devDependencies = _.extend({
     'webpack': '^1.12.9',
     'webpack-hot-middleware': '^2.4.1'
-  }, configDependencies);
+  }, configs.devDependencies);
 
   let pkg = {};
   const packageFile = path.join(CWD, 'package.json');
 
   if (fs.existsSync(packageFile)) {
     pkg = JSON.parse(fs.readFileSync(packageFile).toString());
+  }
+
+  if (!pkg.dependencies) {
+    pkg.dependencies = {};
   }
 
   if (!pkg.devDependencies) {
@@ -155,8 +167,15 @@ function updateNpmPackages(target, configDependencies) {
   let hasChanged = false;
 
   for (let depName in dependencies) {
-    if (isNpmPackageOlder(dependencies[depName], pkg.devDependencies[depName])) {
-      pkg.devDependencies[depName] = dependencies[depName];
+    if (isNpmPackageOlder(dependencies[depName], pkg.dependencies[depName])) {
+      pkg.dependencies[depName] = dependencies[depName];
+      hasChanged = true;
+    }
+  }
+
+  for (let depName in devDependencies) {
+    if (isNpmPackageOlder(devDependencies[depName], pkg.devDependencies[depName])) {
+      pkg.devDependencies[depName] = devDependencies[depName];
       hasChanged = true;
     }
   }
@@ -229,6 +248,7 @@ function runWebpack(shortName, webpackConfig, entryFile, configFiles) {
 
 function readPackageConfig(platform, webpackConfig, unibuilds, settings) {
   let deps = {};
+  let devDeps = {};
   let configs = [];
 
   for (let i = 0; i < unibuilds.length; ++i) {
@@ -237,7 +257,9 @@ function readPackageConfig(platform, webpackConfig, unibuilds, settings) {
 
       try {
         eval(resource.data.toString());
-        deps = _.extend(deps, dependencies(settings));
+        const dep = dependencies(settings);
+        deps = _.extend(deps, dep.dependencies);
+        devDeps = _.extend(devDeps, dep.devDependencies);
         configs.push({ weight, config });
       } catch(e) {
         console.error(e);
@@ -249,6 +271,7 @@ function readPackageConfig(platform, webpackConfig, unibuilds, settings) {
 
   return {
     dependencies: deps,
+    devDependencies: devDeps,
     load: () => {
       configs.forEach(config => {
         try {
@@ -661,11 +684,23 @@ function checkMigration() {
       const deps = JSON.parse(fs.readFileSync(CWD + '/webpack.packages.json').toString());
       const depsName = Object.keys(deps);
 
-      const dependenciesName = depsName.filter(name => !/-(loader|plugin)$/.test(name));
+      const dependenciesName = depsName.filter(name =>
+        !/-loader$/.test(name) &&
+        name.indexOf('webpack') < 0 &&
+        name.indexOf('babel') < 0 &&
+        name.indexOf('react-transform') !== 0 &&
+        name !== 'redbox-react'
+      );
       const dependencies = {};
       dependenciesName.forEach(name => dependencies[name] = deps[name]);
 
-      const devDependenciesName = depsName.filter(name => /-(loader|plugin)$/.test(name));
+      const devDependenciesName = depsName.filter(name =>
+        /-loader$/.test(name) ||
+        name.indexOf('webpack') >= 0 ||
+        name.indexOf('babel') >= 0 ||
+        name.indexOf('react-transform') === 0 ||
+        name === 'redbox-react'
+      );
       const devDependencies = {};
       dependenciesName.forEach(name => devDependencies[name] = deps[name]);
 
@@ -673,7 +708,6 @@ function checkMigration() {
 
       fs.writeFileSync(CWD + '/package.json', JSON.stringify({
         name: cwdPaths[cwdPaths.length - 1],
-        version: '0.1.0',
         private: true,
         main: 'server/entry.js',
         browser: 'client/entry.js',
