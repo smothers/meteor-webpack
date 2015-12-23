@@ -67,13 +67,16 @@ WebpackCompiler = class WebpackCompiler {
         'cordova' :
         (platform.indexOf('web') >= 0) ? 'web' : 'server';
 
-    const settingsFiles = filterFiles(files, 'webpack.json');
-    const entryFile = files.find(file => /^entry\.([A-Za-z]+)$/.test(file.getBasename()));
-    const settings = readSettings(settingsFiles, shortName);
+    const entryFileName = getEntryFileName(shortName);
+    const entryFile = files.find(file => file.getPathInPackage() === entryFileName);
 
-    if (!entryFile && !configFiles.length) {
-      throw new Exception('Cannot find your entry or webpack config');
+    if (!entryFile) {
+      console.error('Cannot find the entry point "' + entryFileName + '" for the ' + shortName);
+      process.exit(1);
     }
+
+    const settingsFiles = filterFiles(files, 'webpack.json');
+    const settings = readSettings(settingsFiles, shortName);
 
     let webpackConfig = {
       entry: entryFile ? _path.join(CWD, entryFile.getPathInPackage()) : null,
@@ -113,6 +116,20 @@ WebpackCompiler = class WebpackCompiler {
       });
     });
   }
+}
+
+function getEntryFileName(platform) {
+  let name;
+
+  try {
+    const pkg = JSON.parse(fs.readFileSync(path.join(CWD, 'package.json')).toString());
+    name = platform === 'server' ? pkg.main : pkg.browser || pkg.main;
+  } catch(e) {
+    console.error('Error in your package.json: ' + e.message);
+    process.exit(1);
+  }
+
+  return name || 'index.js';
 }
 
 function readSettings(settingsFiles, platform) {
