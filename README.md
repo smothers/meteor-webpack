@@ -7,6 +7,7 @@ Seamlessly integrate Webpack to improve Meteor build system<br />
 - Instant feedback when you change your files (not even a page refresh!)
 - Organize your assets with the code they belong
 - Faster page loading by splitting your code in multiple chunks
+- ES6 modules while Meteor 1.3 is far from being released!
 
 ## How can I get started?
 You can learn how to use Webpack with Meteor by [getting the free course on The Reactive Stack](https://thereactivestack.com).
@@ -38,6 +39,29 @@ Your entry files are defined within your package.json. The main is your server e
   "browser": "client/entry.js"
 }
 ```
+
+## Webpack packages
+You can visit the package documentation for more details on the settings you can use.
+
+### Core
+- `webpack:webpack`: You need this package to use Webpack with Meteor
+- [`webpack:assets`](https://atmospherejs.com/webpack/assets) (automatically added): Bundle your file and image assets by importing them (.png, .jpg, .jpeg, .svg, .ttf, .woff, .woff2, .eot)
+
+### Framework
+- [`webpack:react`](https://atmospherejs.com/webpack/react): Use React and JSX with Webpack (.js and .jsx)
+- `webpack:angular` *(coming soon)*: Use Angular with Webpack (.js and .html)
+- `webpack:blaze` *(coming soon)*: Use Blaze with Webpack (.js and .html)
+
+### Stylesheets
+- [`webpack:css`](https://atmospherejs.com/webpack/css) (automatically added): Bundle your CSS by importing it (.import.css or .css)
+- [`webpack:sass`](https://atmospherejs.com/webpack/sass): Support for SASS (.scss)
+- [`webpack:less`](https://atmospherejs.com/webpack/less): Support for LESS (.less)
+
+### Languages
+- `webpack:typescript` *(coming soon)*: Support for typescript (.ts and .tsx)
+- `webpack:coffeescript` *(coming soon)*: Support for coffeescript (.coffee)
+
+**If you feel a package is missing and could be beneficial to the community, feel free to open an issue about it!**
 
 ## NPM packages
 You can use any NPM package by using the package.json file.
