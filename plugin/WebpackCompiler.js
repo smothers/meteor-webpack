@@ -719,7 +719,7 @@ function checkMigration() {
         name === 'redbox-react'
       );
       const devDependencies = {};
-      dependenciesName.forEach(name => devDependencies[name] = deps[name]);
+      devDependenciesName.forEach(name => devDependencies[name] = deps[name]);
 
       const cwdPaths = CWD.split('/');
 
