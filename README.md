@@ -1,101 +1,59 @@
-Seamlessly integrate Webpack with the Meteor build system.
+# webpack:webpack by <a href="https://thereactivestack.com">The Reactive Stack</a>
+Seamlessly integrate Webpack to improve Meteor build system<br />
+**Compatible with Meteor 1.2 and 1.3**
 
-Build your application with his assets. Use hot module replacement (HMR) in development mode. Optimize the code in production mode.
+## Why should you use Webpack?
+- No configuration required, you only need to add packages
+- Instant feedback when you change your files (not even a page refresh!)
+- Organize your assets with the code they belong
+- Faster page loading by splitting your code in multiple chunks
 
-To try different examples or setup a new project, you can use the [kickstart projects](https://github.com/thereactivestack/kickstart).
+## How can I get started?
+You can learn how to use Webpack with Meteor by [getting the free course on The Reactive Stack](https://thereactivestack.com).
 
-# How does it work?
-Webpack is configured by using a webpack.conf.js file. One on the server and one on the client.
+Many [kickstart projects are also available](https://github.com/thereactivestack/kickstart) so you can clone one that fits your needs.
 
-It looks for the entry file and build the entire application following the import (ES6 modules) / require (CommonJS).
+Or you can start from scratch like this (this is a React / SASS example)
 
-The JavaScript files (.js) and CSS import files (.import.css) are not automatically included.
-
-In development mode, it will add to your configuration what is needed to make hot module replacement (HMR) work.
-
-In production mode, it will add the best optimization config and include the source map.
-
-Here is an example of a webpack.conf.js:
-
-```javascript
-var webpack = require('webpack');
-
-module.exports = {
-  entry: './entry',
-  resolve: {
-    extensions: ['', '.js', '.jsx', '.json']
-  },
-  module: {
-    loaders: [
-      { test: /\.jsx?$/, loader: 'babel', query: { stage: 0 }, exclude: /node_modules/ }
-    ]
-  }
-};
+### Start from scratch
+```sh
+meteor create test-project
+cd test-project
+meteor remove ecmascript
+meteor add webpack:webpack
+meteor add webpack:react
+meteor add webpack:sass
+meteor
+npm install
 ```
 
-# NPM packages
-You can define your NPM dependencies by using one (or multiple) webpack.packages.json. Then, you can require or import them within your code like a regular Webpack project: `import ReactMixin from 'react-mixin';`.
+## Entry files
+Your entry files are defined within your package.json. The main is your server entry and the browser is your client entry.
 
-This is strictly for packages that can be bundled with your application. If it needs to access the server file system or execute a binary at runtime (like PhantomJS), you must use Meteor.npmRequire with `meteorhacks:npm`.
-
-webpack.packages.json:
-```
+```json
 {
-  "babel": "^5.8.23",
-  "react-mixin": "^3.0.0",
-
-  "babel-loader": "^5.3.2",
-  "null-loader": "^0.1.1",
-  "url-loader": "^0.5.6",
-  "file-loader": "^0.8.4",
-  "style-loader": "^0.12.4",
-  "css-loader": "^0.19.0",
-  "less-loader": "^2.2.1",
-  "style-collector-loader": "^0.1.0",
-
-  "babel-plugin-react-transform": "^1.1.1",
-  "react-transform-hmr": "^1.0.1",
-  "react-transform-catch-errors": "^1.0.0",
-  "redbox-react": "^1.1.1"
+  "name": "test-project",
+  "private": true,
+  "main": "server/entry.js",
+  "browser": "client/entry.js"
 }
 ```
 
-# Production
-You can use meteor run, meteor build, mup or anything working with Meteor.
+## NPM packages
+You can use any NPM package by using the package.json file.
 
-## Run in production mode
-`meteor run --production`
+To add a new dependency, run at your project root: `npm install --save module-name`.
 
-## Build for production
-`meteor build .`
+## Production
+The production mode will be automatically detected and will optimize the bundle. The production is is activated when:
 
-## Deploy with Meteor-up
-`mup deploy`
-
-# Install
-It is easier to start by cloning one of the [kickstart projects](https://github.com/thereactivestack/kickstart).
-
-If you would like to create your own from scratch, here are the steps.
-
-1. Setup the correct Meteor packages
-    ```bash
-    meteor remove ecmascript # webpack will take care of it, you can't keep both
-    meteor add webpack:webpack
-    ```
-
-1. Add the NPM modules your webpack config will need in `webpack.packages.json`.
-
-1. Add `webpack.conf.js` and your client entry file in a client folder.
-
-1. Add `webpack.conf.js` and your server entry file in a server folder.
-
-1. (optional) Add ios and/or android support
-    ```bash
-    meteor add-platform ios
-    meteor add-platform android
-    ```
+- You run `meteor --production`
+- You bundle your project
+- You deploy with `mup deploy` or any other tool
 
 ## Startup
 If you need to run code in Meteor before the startup, you can do that if you name your file `meteor.startup.js`.
 
 Calling `FlowRouter.wait()` is a great example of things you might want to do.
+
+`process.env` will reflect the values while compiling on your computer unless you use it within a `meteor.startup.js` file for now.
