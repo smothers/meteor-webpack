@@ -305,6 +305,12 @@ function readPackageConfig(platform, webpackConfig, unibuilds, settings) {
           if (result.extensions) {
             webpackConfig.resolve.extensions = webpackConfig.resolve.extensions.concat(result.extensions);
           }
+
+          if (result.externals) {
+            for (let key in result.externals) {
+              webpackConfig.externals[key] = result.externals[key];
+            }
+          }
         } catch(e) {
           console.error(e.stack);
         }
