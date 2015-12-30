@@ -7,6 +7,8 @@ function dependencies() {
       'react': '~0.14.1',
     },
     devDependencies: {
+      'babel': '^6.3.26',
+      'babel-core': '^6.3.26',
       'babel-loader' : '^6.2.0',
       'babel-preset-react': '^6.3.13',
       'babel-preset-es2015': '^6.3.13',
