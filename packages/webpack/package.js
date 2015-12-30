@@ -11,7 +11,7 @@ Package.registerBuildPlugin({
     use: [
       'meteor',
       'ecmascript@0.1.5',
-      'webpack:npmworkaround@0.1.0'
+      'webpack:npmworkaround@1.0.0'
     ],
     sources: [
       'plugin/WebpackSourceMapFix.js',
@@ -37,7 +37,7 @@ Package.onUse(function(api) {
     api.versionsFrom('1.2');
 
     api.use('isobuild:compiler-plugin@1.0.0');
-    api.use('webpack:reload@0.2.0');
+    api.use('webpack:reload@1.0.0');
 
     api.use('webpack:assets@1.0.0');
     api.use('webpack:css@1.0.0');
