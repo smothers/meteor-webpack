@@ -732,8 +732,8 @@ function checkMigration() {
       fs.writeFileSync(CWD + '/package.json', JSON.stringify({
         name: cwdPaths[cwdPaths.length - 1],
         private: true,
-        main: 'entry/server',
-        browser: 'entry/client',
+        main: 'entry/server/index.js',
+        browser: 'entry/client/index.js',
         dependencies,
         devDependencies
       }, null, 2));
