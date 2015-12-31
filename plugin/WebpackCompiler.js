@@ -325,7 +325,9 @@ function prepareConfig(target, webpackConfig, usingDevServer) {
     webpackConfig.plugins = [];
   }
 
-  webpackConfig.plugins.unshift(new webpack.optimize.DedupePlugin());
+  if (!IS_DEBUG) {
+    webpackConfig.plugins.unshift(new webpack.optimize.DedupePlugin());
+  }
 
   let definePlugin = {
     'process.env.NODE_ENV': JSON.stringify(IS_DEBUG ? 'development' : 'production'),
