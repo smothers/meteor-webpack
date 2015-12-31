@@ -14,6 +14,7 @@ function dependencies() {
       'babel-preset-es2015': '^6.3.13',
       'babel-preset-stage-0': '^6.3.13',
       'babel-plugin-transform-decorators-legacy': '^1.3.2',
+      'babel-plugin-add-module-exports': '^0.1.2',
       'babel-plugin-react-transform': '2.0.0-beta1',
       'react-transform-hmr' : '^1.0.1',
       'react-transform-catch-errors': '^1.0.0',
@@ -25,7 +26,7 @@ function dependencies() {
 function config(settings) {
   var babelSettings = {
     presets: ['react', 'es2015', 'stage-0'],
-    plugins: ['transform-decorators-legacy']
+    plugins: ['transform-decorators-legacy', 'add-module-exports']
   };
 
   if (settings.babel && settings.babel.plugins) {
