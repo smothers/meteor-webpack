@@ -15,7 +15,7 @@ function dependencies() {
       'babel-preset-stage-0': '^6.3.13',
       'babel-plugin-transform-decorators-legacy': '^1.3.2',
       'babel-plugin-add-module-exports': '^0.1.2',
-      'babel-plugin-react-transform': '2.0.0-beta1',
+      'babel-plugin-react-transform': '^2.0.0',
       'react-transform-hmr' : '^1.0.1',
       'react-transform-catch-errors': '^1.0.0',
       'redbox-react': '^1.2.0'
