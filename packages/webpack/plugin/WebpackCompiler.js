@@ -378,6 +378,18 @@ function prepareConfig(target, webpackConfig, usingDevServer) {
     webpackConfig.output = {};
   }
 
+  if (target === 'server') {
+    webpackConfig.target = 'node';
+    webpackConfig.node = {
+      console: false,
+      global: false,
+      process: false,
+      Buffer: false,
+      __filename: true,
+      __dirname: true
+    };
+  }
+
   if (IS_DEBUG) {
     // source-map seems to be the only one working without eval that gives the accurate line of code
     // break call stack for unit testing and server otherwise
@@ -531,7 +543,10 @@ function compile(target, entryFile, configFiles, webpackConfig) {
     let data = fs.readFileSync(outputPath).toString();
 
     if (target === 'server') {
-      data = 'WebpackStats = ' + JSON.stringify(webpackStats) + ';\n' + data;
+      data =
+        'global.require = Npm.require;\n' +
+        'WebpackStats = ' + JSON.stringify(webpackStats) + ';\n' +
+        data;
     }
 
     file.addJavaScript({

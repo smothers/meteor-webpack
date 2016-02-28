@@ -23,7 +23,7 @@ cd test-project
 meteor remove ecmascript
 meteor add webpack:webpack
 meteor add webpack:react
-meteor add webpack:sass
+meteor add webpack:less
 meteor
 npm install
 ```
