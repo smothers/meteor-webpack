@@ -671,6 +671,9 @@ function generateExternals(webpackConfig, isobuilds) {
   for (let i = 0; i < isobuilds.length; ++i) {
     const { declaredExports } = isobuilds[i];
 
+    // Support import from Meteor packages
+    webpackConfig.externals['meteor/' + isobuilds[i].pkg.name] = 'Package[\'' + isobuilds[i].pkg.name + '\']';
+
     for (let j = 0; j < declaredExports.length; ++j) {
       if (!declaredExports[j].testOnly) {
         const declaredExport = declaredExports[j].name;
