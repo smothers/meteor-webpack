@@ -677,6 +677,7 @@ function generateExternals(webpackConfig, isobuilds) {
     for (let j = 0; j < declaredExports.length; ++j) {
       if (!declaredExports[j].testOnly) {
         const declaredExport = declaredExports[j].name;
+        const lowerCaseExport = declaredExports[j].name.toLowerCase();
         const lispCaseExport = getLispCase(declaredExport);
 
         // Don't override a NPM module or user external
@@ -686,6 +687,10 @@ function generateExternals(webpackConfig, isobuilds) {
 
         if (npmDependencies.indexOf(lispCaseExport) < 0 && !webpackConfig.externals[lispCaseExport]) {
           webpackConfig.externals[lispCaseExport] = declaredExport;
+        }
+
+        if (npmDependencies.indexOf(lowerCaseExport) < 0 && !webpackConfig.externals[lowerCaseExport]) {
+          webpackConfig.externals[lowerCaseExport] = declaredExport;
         }
       }
     }
