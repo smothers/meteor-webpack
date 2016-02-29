@@ -544,8 +544,9 @@ function compile(target, entryFile, configFiles, webpackConfig) {
 
     if (target === 'server') {
       data =
-        'global.require = Npm.require;\n' +
-        'WebpackStats = ' + JSON.stringify(webpackStats) + ';\n' +
+        'global.require = Npm.require;\n' + // Polyfill the require to Meteor require
+        'if (typeof global.jQuery === \'undefined\') { global.jQuery = {}; }\n' + // Polyfill so importing jquery in a file doesn't crash the server
+        'WebpackStats = ' + JSON.stringify(webpackStats) + ';\n' + // Infos on Webpack build
         data;
     }
 
@@ -694,6 +695,13 @@ function generateExternals(webpackConfig, isobuilds) {
         }
       }
     }
+  }
+
+  // Make sure jQuery isn't undefined if not available on the server
+  if (!webpackConfig.externals.jquery && npmDependencies.indexOf('jquery') < 0) {
+    webpackConfig.externals.jquery = 'jQuery';
+    webpackConfig.externals.jQuery = 'jQuery';
+    webpackConfig.externals.$ = 'jQuery';
   }
 }
 
