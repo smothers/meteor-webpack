@@ -40,6 +40,9 @@ Your entry files are defined within your package.json. The main is your server e
 }
 ```
 
+## .babelrc
+Your .babelrc config will be automatically added to the configuration. You can add any presets, plugins or any babel config.
+
 ## Webpack packages
 You can visit the package documentation for more details on the settings you can use.
 

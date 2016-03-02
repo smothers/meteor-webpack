@@ -1,4 +1,5 @@
 var weight = 100;
+var fs = Npm.require('fs');
 
 function dependencies() {
   return {
@@ -24,13 +25,48 @@ function dependencies() {
 }
 
 function config(settings) {
-  var babelSettings = {
-    presets: ['react', 'es2015', 'stage-0'],
-    plugins: ['transform-decorators-legacy', 'add-module-exports']
-  };
+  var babelSettings = {};
+
+  var CWD = path.resolve('./');
+
+  if (fs.existsSync(CWD + '/.babelrc')) {
+    var babelrc = fs.readFileSync(CWD + '/.babelrc');
+    babelSettings = JSON.parse(babelrc);
+  }
+
+  if (!babelSettings.presets) {
+    babelSettings.presets = [];
+  }
+
+  if (!babelSettings.plugins) {
+    babelSettings.plugins = [];
+  }
+
+  if (babelSettings.presets.indexOf('react') < 0) {
+    babelSettings.presets.push('react');
+  }
+
+  if (babelSettings.presets.indexOf('es2015') < 0) {
+    babelSettings.presets.push('es2015');
+  }
+
+  if (babelSettings.presets.indexOf('stage-0') < 0 &&
+      babelSettings.presets.indexOf('stage-1') < 0 &&
+      babelSettings.presets.indexOf('stage-2') < 0 &&
+      babelSettings.presets.indexOf('stage-3') < 0) {
+    babelSettings.presets.push('stage-0');
+  }
 
   if (settings.babel && settings.babel.plugins) {
     babelSettings.plugins = babelSettings.plugins.concat(settings.babel.plugins);
+  }
+
+  if (babelSettings.plugins.indexOf('transform-decorators-legacy') < 0) {
+    babelSettings.plugins.push('transform-decorators-legacy');
+  }
+
+  if (babelSettings.plugins.indexOf('add-module-exports') < 0) {
+    babelSettings.plugins.push('add-module-exports');
   }
 
   if (settings.isDebug && settings.platform !== 'server') {
