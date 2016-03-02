@@ -9,4 +9,4 @@ meteor@1.1.10
 promise@0.5.1
 reload@1.1.4
 underscore@1.0.4
-webpack:reload@0.2.0
+webpack:reload@1.0.0
