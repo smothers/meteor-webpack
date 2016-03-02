@@ -84,5 +84,3 @@ The production mode will be automatically detected and will optimize the bundle.
 If you need to run code in Meteor before the startup, you can do that if you name your file `meteor.startup.js`.
 
 Calling `FlowRouter.wait()` is a great example of things you might want to do.
-
-`process.env` will reflect the values while compiling on your computer unless you use it within a `meteor.startup.js` file for now.
