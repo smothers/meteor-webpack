@@ -666,6 +666,7 @@ function getLispCase(exportName) {
 
 function generateExternals(webpackConfig, isobuilds) {
   const npmDependencies = findAllDependencies(CWD);
+  let hasReactPackage = false;
 
   webpackConfig.externals = webpackConfig.externals || {};
 
@@ -694,6 +695,14 @@ function generateExternals(webpackConfig, isobuilds) {
           webpackConfig.externals[lowerCaseExport] = declaredExport;
         }
       }
+    }
+
+    // Use React from Meteor instead of NPM if we use the package
+    if (isobuilds[i].pkg.name === 'react-runtime') {
+      webpackConfig.externals.React = 'React';
+      webpackConfig.externals.react = 'React';
+      webpackConfig.externals.ReactDOM = 'ReactDOM';
+      webpackConfig.externals['react-dom'] = 'ReactDOM';
     }
   }
 
