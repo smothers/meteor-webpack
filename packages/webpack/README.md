@@ -20,12 +20,14 @@ Or you can start from scratch like this (this is a React / SASS example)
 ```sh
 meteor create test-project
 cd test-project
+npm init
 meteor remove ecmascript
 meteor add webpack:webpack
 meteor add webpack:react
 meteor add webpack:less
 meteor
 npm install
+meteor
 ```
 
 ## Entry files
