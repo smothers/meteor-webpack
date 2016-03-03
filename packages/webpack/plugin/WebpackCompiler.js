@@ -96,6 +96,7 @@ WebpackCompiler = class WebpackCompiler {
     }
 
     const unibuilds = files[0]._resourceSlot.packageSourceBatch.processor.unibuilds;
+    settings.packages = unibuilds.map(unibuild => unibuild.pkg.name);
     generateExternals(webpackConfig, unibuilds);
     const configs = readPackageConfig(shortName, webpackConfig, unibuilds, settings);
 
