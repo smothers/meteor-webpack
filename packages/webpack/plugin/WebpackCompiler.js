@@ -391,9 +391,7 @@ function prepareConfig(target, webpackConfig, usingDevServer) {
   }
 
   if (IS_DEBUG) {
-    // source-map seems to be the only one working without eval that gives the accurate line of code
-    // break call stack for unit testing and server otherwise
-    webpackConfig.devtool = webpackConfig.devtool || 'source-map';
+    webpackConfig.devtool = webpackConfig.devtool || 'cheap-eval-source-map';
 
     if (!webpackConfig.devServer) {
       webpackConfig.devServer = {};
@@ -403,7 +401,7 @@ function prepareConfig(target, webpackConfig, usingDevServer) {
     webpackConfig.devServer.host = webpackConfig.devServer.host || 'localhost';
     webpackConfig.devServer.port = webpackConfig.devServer.port || 3500;
   } else {
-    webpackConfig.devtool = webpackConfig.devtool || 'source-map';
+    webpackConfig.devtool = webpackConfig.devtool || 'cheap-source-map';
   }
 
   if (usingDevServer) {
