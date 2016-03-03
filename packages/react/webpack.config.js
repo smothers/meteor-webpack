@@ -1,5 +1,4 @@
 var weight = 100;
-var fs = Npm.require('fs');
 
 function dependencies() {
   return {
@@ -25,6 +24,8 @@ function dependencies() {
 }
 
 function config(settings) {
+  var fs = Npm.require('fs');
+  var path = Npm.require('path');
   var babelSettings = {};
 
   var CWD = path.resolve('./');
