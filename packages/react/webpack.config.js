@@ -92,7 +92,7 @@ function config(settings) {
       { test: /\.jsx?$/, loader: 'babel', query: babelSettings, exclude: /node_modules/ }
     ],
     extensions: ['.js', '.jsx'],
-    externals: {
+    externals: settings.packages.indexOf('react-runtime') < 0 ? {} : {
       'react-addons-transition-group': 'React.addons.TransitionGroup',
       'react-addons-css-transition-group': 'React.addons.CSSTransitionGroup',
       'react-addons-linked-state-mixin': 'React.addons.LinkedStateMixin',
