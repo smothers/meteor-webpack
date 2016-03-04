@@ -16,6 +16,7 @@ function dependencies() {
       'babel-plugin-transform-decorators-legacy': '^1.3.2',
       'babel-plugin-add-module-exports': '^0.1.2',
       'babel-plugin-react-transform': '^2.0.0',
+      'expose-loader': '^0.7.1',
       'react-transform-hmr' : '^1.0.1',
       'react-transform-catch-errors': '^1.0.0',
       'redbox-react': '^1.2.0'
@@ -23,9 +24,9 @@ function dependencies() {
   };
 }
 
-function config(settings) {
-  var fs = Npm.require('fs');
-  var path = Npm.require('path');
+function config(settings, require) {
+  var fs = require('fs');
+  var path = require('path');
   var babelSettings = {};
 
   var CWD = path.resolve('./');
@@ -87,12 +88,14 @@ function config(settings) {
     babelSettings.plugins.push(['react-transform', { transforms: transforms }]);
   }
 
-  return {
-    loaders: [
-      { test: /\.jsx?$/, loader: 'babel', query: babelSettings, exclude: /node_modules/ }
-    ],
-    extensions: ['.js', '.jsx'],
-    externals: settings.packages.indexOf('react-runtime') < 0 ? {} : {
+  var usingMeteorReact = settings.packages.indexOf('react-runtime') >= 0;
+  var externals = {};
+  var loaders = [
+    { test: /\.jsx?$/, loader: 'babel', query: babelSettings, exclude: /node_modules/ }
+  ];
+
+  if (usingMeteorReact) {
+    externals = {
       'react-addons-transition-group': 'React.addons.TransitionGroup',
       'react-addons-css-transition-group': 'React.addons.CSSTransitionGroup',
       'react-addons-linked-state-mixin': 'React.addons.LinkedStateMixin',
@@ -101,6 +104,15 @@ function config(settings) {
       'react-addons-pure-render-mixin': 'React.addons.PureRenderMixin',
       'react-addons-test-utils': 'React.addons.TestUtils',
       'react-addons-perf': 'React.addons.Perf'
-    }
+    };
+  } else {
+    // Expose window.React
+    loaders.unshift({ test: /\/node_modules\/react\/react\.js$/, loader: 'expose?React' });
+  }
+
+  return {
+    loaders: loaders,
+    extensions: ['.js', '.jsx'],
+    externals: externals
   };
 }

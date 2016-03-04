@@ -47,11 +47,6 @@ WebpackCompiler = class WebpackCompiler {
 
     checkMigration();
 
-    if (!fs.existsSync(CWD + '/node_modules')) {
-      console.log('Please run npm install in your project folder to continue.');
-      process.exit(1);
-    }
-
     files = files.filter(file => file.getPackageName() !== 'webpack:webpack');
     const packageFiles = files.filter(file => file.getPackageName() !== null);
 
@@ -549,6 +544,11 @@ function compile(target, entryFile, configFiles, webpackConfig) {
         'if (typeof global.jQuery === \'undefined\') { global.jQuery = {}; }\n' + // Polyfill so importing jquery in a file doesn't crash the server
         'WebpackStats = ' + JSON.stringify(webpackStats) + ';\n' + // Infos on Webpack build
         data;
+
+      if (_fs.existsSync(_path.join(CWD, 'node_modules', 'react'))) {
+        // Also expose React on the server for ssr
+        data = 'global.React = Npm.require(\'react\');\n' + data;
+      }
     }
 
     file.addJavaScript({
