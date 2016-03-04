@@ -28,12 +28,42 @@ function config(settings, require) {
   var fs = require('fs');
   var path = require('path');
   var babelSettings = {};
+  var tsConfig = {};
 
   var CWD = path.resolve('./');
 
   if (fs.existsSync(CWD + '/.babelrc')) {
     var babelrc = fs.readFileSync(CWD + '/.babelrc');
     babelSettings = JSON.parse(babelrc);
+  }
+
+  if (fs.existsSync(CWD + '/tsconfig.json')) {
+    var tsConfigData = fs.readFileSync(CWD + '/tsconfig.json');
+    tsConfig = JSON.parse(tsConfigData);
+  }
+
+  tsConfig.transpileOnly = true;
+
+  if (!tsConfig.compilerOptions) {
+    tsConfig.compilerOptions = {};
+  }
+
+  tsConfig.compilerOptions.target = 'es6';
+  tsConfig.compilerOptions.jsx = 'react';
+  tsConfig.compilerOptions.sourceMap = true;
+  tsConfig.compilerOptions.experimentalDecorators = true;
+  tsConfig.compilerOptions.module = 'commonjs';
+
+  if (!tsConfig.exclude) {
+    tsConfig.exclude = [];
+  }
+
+  if (tsConfig.exclude.indexOf('node_modules') < 0) {
+    tsConfig.exclude.push('node_modules');
+  }
+
+  if (tsConfig.exclude.indexOf('.meteor') < 0) {
+    tsConfig.exclude.push('.meteor');
   }
 
   if (!babelSettings.presets) {
@@ -90,6 +120,7 @@ function config(settings, require) {
 
   var usingMeteorReact = settings.packages.indexOf('react-runtime') >= 0;
   var externals = {};
+  var extensions = ['.js', '.jsx'];
   var loaders = [
     { test: /\.jsx?$/, loader: 'babel', query: babelSettings, exclude: /\.meteor|node_modules/ }
   ];
@@ -110,9 +141,14 @@ function config(settings, require) {
     loaders.unshift({ test: /\/node_modules\/react\/react\.js$/, loader: 'expose?React' });
   }
 
+  if (settings.packages.indexOf('webpack:typescript') >= 0) {
+    loaders.push({ test: /\.tsx$/, loader: 'babel?' + JSON.stringify(babelSettings) + '!ts?' + JSON.stringify(tsConfig), exclude: /\.meteor|node_modules/ });
+    extensions.push('.tsx');
+  }
+
   return {
     loaders: loaders,
-    extensions: ['.js', '.jsx'],
+    extensions: extensions,
     externals: externals
   };
 }

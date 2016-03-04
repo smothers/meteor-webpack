@@ -70,8 +70,8 @@ You can visit the package documentation for more details on the settings you can
 - [`webpack:markdown`](https://atmospherejs.com/webpack/markdown): Import Markdown files into an HTML string
 
 ### Languages
-- `webpack:typescript` *(coming soon)*: Support for typescript (.ts and .tsx)
-- `webpack:coffeescript` *(coming soon)*: Support for coffeescript (.coffee)
+- [`webpack:typescript`](https://atmospherejs.com/webpack/typescript): Support for typescript (.ts and .tsx)
+- [`webpack:coffeescript`](https://atmospherejs.com/webpack/coffeescript): Support for coffeescript (.coffee)
 
 **If you feel a package is missing and could be beneficial to the community, feel free to open an issue about it!**
 

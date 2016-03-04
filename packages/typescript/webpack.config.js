@@ -8,8 +8,8 @@ function dependencies() {
       'babel-loader' : '^6.2.0',
       'babel-preset-es2015': '^6.3.13',
       'babel-preset-stage-0': '^6.3.13',
-      'coffee-loader' : '^0.7.2',
-      'coffee-script' : '^1.10.0'
+      'ts-loader' : '^0.8.1',
+      'typescript' : '^1.8.7'
     }
   };
 }
@@ -18,12 +18,41 @@ function config(settings, require) {
   var fs = require('fs');
   var path = require('path');
   var babelSettings = {};
+  var tsConfig = {};
 
   var CWD = path.resolve('./');
 
   if (fs.existsSync(CWD + '/.babelrc')) {
     var babelrc = fs.readFileSync(CWD + '/.babelrc');
     babelSettings = JSON.parse(babelrc);
+  }
+
+  if (fs.existsSync(CWD + '/tsconfig.json')) {
+    var tsConfigData = fs.readFileSync(CWD + '/tsconfig.json');
+    tsConfig = JSON.parse(tsConfigData);
+  }
+
+  tsConfig.transpileOnly = true;
+
+  if (!tsConfig.compilerOptions) {
+    tsConfig.compilerOptions = {};
+  }
+
+  tsConfig.compilerOptions.target = 'es6';
+  tsConfig.compilerOptions.sourceMap = true;
+  tsConfig.compilerOptions.experimentalDecorators = true;
+  tsConfig.compilerOptions.module = 'commonjs';
+
+  if (!tsConfig.exclude) {
+    tsConfig.exclude = [];
+  }
+
+  if (tsConfig.exclude.indexOf('node_modules') < 0) {
+    tsConfig.exclude.push('node_modules');
+  }
+
+  if (tsConfig.exclude.indexOf('.meteor') < 0) {
+    tsConfig.exclude.push('.meteor');
   }
 
   if (!babelSettings.presets) {
@@ -51,8 +80,8 @@ function config(settings, require) {
 
   return {
     loaders: [
-      { test: /\.coffee$/, loader: 'babel?' + JSON.stringify(babelSettings) + '!coffee', exclude: /\.meteor|node_modules/ }
+      { test: /\.ts$/, loader: 'babel?' + JSON.stringify(babelSettings) + '!ts?' + JSON.stringify(tsConfig), exclude: /\.meteor|node_modules/ }
     ],
-    extensions: ['.coffee'],
+    extensions: ['.ts'],
   };
 }
