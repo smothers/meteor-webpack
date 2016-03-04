@@ -91,7 +91,7 @@ function config(settings, require) {
   var usingMeteorReact = settings.packages.indexOf('react-runtime') >= 0;
   var externals = {};
   var loaders = [
-    { test: /\.jsx?$/, loader: 'babel', query: babelSettings, exclude: /node_modules/ }
+    { test: /\.jsx?$/, loader: 'babel', query: babelSettings, exclude: /\.meteor|node_modules/ }
   ];
 
   if (usingMeteorReact) {
