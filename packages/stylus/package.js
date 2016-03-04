@@ -1,8 +1,8 @@
 Package.describe({
-    name: 'zaklampert:webpack-stylus',
-    version: '1.0.1',
+    name: 'webpack:stylus',
+    version: '1.0.0',
     summary: 'Integrate Stylus import with Webpack',
-    git: 'https://github.com/zaklampert/webpack-stylus.git',
+    git: 'https://github.com/thereactivestack/meteor-webpack.git',
     documentation: 'README.md'
 });
 
