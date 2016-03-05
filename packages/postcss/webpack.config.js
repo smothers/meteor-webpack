@@ -15,11 +15,25 @@ function config(settings, require) {
   var moduleStr = ((settings.css && settings.css.module) ? 'module&' : '') + 'importLoaders=1&';
 
   var postcss = (settings.postcss || []).map(function(pluginName) {
-    if (pluginName === 'postcss-import') {
-      return require(pluginName)({ addDependencyTo: require('webpack') })
+    if (typeof pluginName === 'string') {
+      if (pluginName === 'postcss-import') {
+        return require(pluginName)({ addDependencyTo: require('webpack') })
+      }
+
+      return require(pluginName);
     }
 
-    return require(pluginName);
+    if (typeof pluginName === 'object' && Array.isArray(pluginName) && pluginName.length > 0) {
+      if (pluginName.length === 1) {
+        pluginName.push({});
+      }
+
+      if (pluginName[0] === 'postcss-import') {
+        pluginName[1].addDependencyTo = require('webpack');
+      }
+
+      return require(pluginName[0])(pluginName[1]);
+    }
   });
 
   if (settings.isDebug) {
