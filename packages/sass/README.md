@@ -3,3 +3,5 @@ Meteor package to integrate SASS (.scss) import with [Webpack](https://github.co
 
 ## Settings (webpack.json)
 - `css.module`: Enable local CSS by default
+- `sass`: Setting object with node-sass options
+- `sass.includePaths`: Set an array of includedPaths for the import
