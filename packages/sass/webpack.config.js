@@ -34,7 +34,7 @@ function config(settings, require) {
   }
 
   if (cssLoader) {
-    loaders.push({ test: /\.scss$/, loader: cssLoader + '!sass' });
+    loaders.push({ test: /\.scss$/, loader: cssLoader + '!sass?' + JSON.stringify(settings.sass || {}) });
   }
 
   return {
