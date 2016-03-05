@@ -47,10 +47,11 @@ Your entry files are defined within your package.json. The main is your server e
 ## webpack.json
 You can tweak your Webpack settings by using a webpack.json file in the root of your project.
 
-`css.module` (bool): Use local CSS by default (default to `false`)
-`hotMiddleware.reload` (bool): Reload the page if hot reload doesn't work? (default to `false`)
-`devServer.host`: The hostname the Webpack dev server will be using
-`postcss`: Array of plugins to use
+- `css.module` (bool): Use local CSS by default (default to `false`)
+- `hotMiddleware.reload` (bool): Reload the page if hot reload doesn't work? (default to `false`)
+- `devServer.host`: The hostname the Webpack dev server will be using
+- `postcss`: Array of plugins to use
+- ...
 
 See your package readme for more infos on the settings available.
 
