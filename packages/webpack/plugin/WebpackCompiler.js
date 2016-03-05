@@ -102,7 +102,7 @@ WebpackCompiler = class WebpackCompiler {
 
     configs.load();
 
-    runWebpack(shortName, webpackConfig, entryFile, configFiles);
+    runWebpack(shortName, webpackConfig, entryFile, configFiles, settings);
 
     // Every startup.js files are sent directly to Meteor
     files.filter(file => file.getBasename() === 'meteor.startup.js').forEach(file => {
@@ -237,7 +237,7 @@ function isNpmPackageOlder(depVersion, currentVersion) {
   return false;
 }
 
-function runWebpack(shortName, webpackConfig, entryFile, configFiles) {
+function runWebpack(shortName, webpackConfig, entryFile, configFiles, settings) {
   configFiles.forEach(configFile => {
     const filePath = configFile.getPathInPackage();
     const data = configFile.getContentsAsString();
@@ -250,7 +250,7 @@ function runWebpack(shortName, webpackConfig, entryFile, configFiles) {
     shortName !== 'server' &&
     !PROCESS_ENV.IS_MIRROR; // Integration tests (velocity) should not use dev server
 
-  prepareConfig(shortName, webpackConfig, usingDevServer);
+  prepareConfig(shortName, webpackConfig, usingDevServer, settings);
 
   if (usingDevServer) {
     compileDevServer(shortName, entryFile, configFiles, webpackConfig);
@@ -376,7 +376,7 @@ function readWebpackConfig(webpackConfig, target, file, filePath, data) {
   webpackConfig = _.extend(webpackConfig, module.exports);
 }
 
-function prepareConfig(target, webpackConfig, usingDevServer) {
+function prepareConfig(target, webpackConfig, usingDevServer, settings) {
   if (!webpackConfig.output) {
     webpackConfig.output = {};
   }
@@ -407,7 +407,7 @@ function prepareConfig(target, webpackConfig, usingDevServer) {
     webpackConfig.devtool = webpackConfig.devtool || 'cheap-source-map';
   }
 
-  if (usingDevServer) {
+  if (usingDevServer && settings.packages.indexOf('webpack:react') >= 0) {
     let options = 'path=' + webpackConfig.devServer.protocol + '//' + webpackConfig.devServer.host + ':' + webpackConfig.devServer.port + '/__webpack_hmr';
 
     if (webpackConfig.hotMiddleware) {
