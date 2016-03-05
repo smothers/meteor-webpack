@@ -438,7 +438,10 @@ function prepareConfig(target, webpackConfig, usingDevServer) {
     'process.env.NODE_ENV': JSON.stringify(IS_DEBUG ? 'development' : 'production'),
     'Meteor.isClient': JSON.stringify(target !== 'server'),
     'Meteor.isServer': JSON.stringify(target === 'server'),
-    'Meteor.isCordova': JSON.stringify(target === 'cordova')
+    'Meteor.isCordova': JSON.stringify(target === 'cordova'),
+    'Package.meteor.Meteor.isClient': JSON.stringify(target !== 'server'),
+    'Package.meteor.Meteor.isServer': JSON.stringify(target === 'server'),
+    'Package.meteor.Meteor.isCordova': JSON.stringify(target === 'cordova')
   };
 
   for (let name in PROCESS_ENV) {
