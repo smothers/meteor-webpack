@@ -302,6 +302,13 @@ function readPackageConfig(platform, webpackConfig, unibuilds, settings) {
             webpackConfig.resolve.extensions = webpackConfig.resolve.extensions.concat(result.extensions);
           }
 
+          // Save the configs we want to set in the webpack config directly (like postcss)
+          if (result.config && typeof result.config === 'object') {
+            for (let key in result.config) {
+              webpackConfig[key] = result.config[key];
+            }
+          }
+
           if (result.externals) {
             for (let key in result.externals) {
               webpackConfig.externals[key] = result.externals[key];
