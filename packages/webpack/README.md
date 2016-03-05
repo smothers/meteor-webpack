@@ -61,6 +61,7 @@ You can visit the package documentation for more details on the settings you can
 
 ### Stylesheets
 - [`webpack:css`](https://atmospherejs.com/webpack/css) (automatically added): Bundle your CSS by importing it (.import.css or .css)
+- [`webpack:postcss`](https://atmospherejs.com/webpack/postcss): Support for PostCSS (.import.css or .css)
 - [`webpack:sass`](https://atmospherejs.com/webpack/sass): Support for SASS (.scss)
 - [`webpack:less`](https://atmospherejs.com/webpack/less): Support for LESS (.less)
 - [`webpack:stylus`](https://atmospherejs.com/webpack/stylus): Support for Stylus (.styl)
