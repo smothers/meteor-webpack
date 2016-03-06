@@ -437,7 +437,7 @@ function prepareConfig(target, webpackConfig, usingDevServer, settings) {
     webpackConfig.plugins = [];
   }
 
-  if (!IS_DEBUG) {
+  if (!IS_DEBUG && !settings.disableDedupePlugin) {
     webpackConfig.plugins.unshift(new webpack.optimize.DedupePlugin());
   }
 
@@ -464,7 +464,10 @@ function prepareConfig(target, webpackConfig, usingDevServer, settings) {
   if (!IS_DEBUG) {
     // Production optimizations
     webpackConfig.plugins.push(new webpack.optimize.UglifyJsPlugin());
-    webpackConfig.plugins.push(new webpack.optimize.OccurenceOrderPlugin());
+
+    if (!settings.disableOccurenceOrderPlugin) {
+      webpackConfig.plugins.push(new webpack.optimize.OccurenceOrderPlugin());
+    }
   }
 
   if (usingDevServer) {

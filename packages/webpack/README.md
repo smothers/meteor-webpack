@@ -50,6 +50,8 @@ You can tweak your Webpack settings by using a webpack.json file in the root of 
 - `css.module` (bool): Use local CSS by default (default to `false`)
 - `hotMiddleware.reload` (bool): Reload the page if hot reload doesn't work? (default to `false`)
 - `devServer.host`: The hostname the Webpack dev server will be using
+- `disableDedupePlugin` (bool): Disable the DedupePlugin (default to `false`)
+- `disableOccurenceOrderPlugin` (bool): Disable the OccurenceOrderPlugin (default to `false`)
 - `postcss`: Array of plugins to use
 - ...
 
