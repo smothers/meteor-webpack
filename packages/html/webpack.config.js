@@ -10,7 +10,7 @@ function dependencies(settings) {
 
 function config() {
   return {
-    loaders: [{ test: /\.md$/, loader: 'html' }],
+    loaders: [{ test: /\.html$/, loader: 'html' }],
     extensions: ['.html']
   };
 }
