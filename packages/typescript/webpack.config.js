@@ -38,10 +38,21 @@ function config(settings, require) {
     tsConfig.compilerOptions = {};
   }
 
-  tsConfig.compilerOptions.target = 'es6';
-  tsConfig.compilerOptions.sourceMap = true;
-  tsConfig.compilerOptions.experimentalDecorators = true;
-  tsConfig.compilerOptions.module = 'commonjs';
+  if (!tsConfig.compilerOptions.target) {
+    tsConfig.compilerOptions.target = 'es6';
+  }
+
+  if (!tsConfig.compilerOptions.module) {
+    tsConfig.compilerOptions.module = 'commonjs';
+  }
+
+  if (typeof tsConfig.compilerOptions.sourceMap === 'undefined') {
+    tsConfig.compilerOptions.sourceMap = true;
+  }
+
+  if (typeof tsConfig.compilerOptions.experimentalDecorators === 'undefined') {
+    tsConfig.compilerOptions.experimentalDecorators = true;
+  }
 
   if (!tsConfig.exclude) {
     tsConfig.exclude = [];
