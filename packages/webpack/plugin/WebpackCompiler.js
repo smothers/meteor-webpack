@@ -37,6 +37,11 @@ let IS_DEBUG =
   argv.indexOf('--production') < 0 &&
   (!IS_BUILD || argv.indexOf('--debug') >= 0);
 
+const RELEASE = fs.readFileSync(CWD + '/.meteor/release').toString();
+const METEOR_VERSION = RELEASE.match(/METEOR\@([a-z0-9\.-]+)/i)[1];
+const METEOR_VERSION_MAJOR = parseInt(METEOR_VERSION.match(/^[0-9]+/)[0]);
+const METEOR_VERSION_MINOR = parseInt(METEOR_VERSION.match(/^[0-9]+\.([0-9]+)/)[1]);
+
 WebpackCompiler = class WebpackCompiler {
   processFilesForTarget(files, options) {
     // Waiting for the PR to be merged
@@ -553,14 +558,30 @@ function compile(target, entryFile, configFiles, webpackConfig) {
 
     if (target === 'server') {
       data =
-        'global.require = Npm.require;\n' + // Polyfill the require to Meteor require
         'if (typeof global.jQuery === \'undefined\') { global.jQuery = {}; }\n' + // Polyfill so importing jquery in a file doesn't crash the server
         'WebpackStats = ' + JSON.stringify(webpackStats) + ';\n' + // Infos on Webpack build
         data;
 
       if (_fs.existsSync(_path.join(CWD, 'node_modules', 'react'))) {
         // Also expose React on the server for ssr
-        data = 'global.React = Npm.require(\'react\');\n' + data;
+        data = 'global.React = require(\'react\');\n' + data;
+      }
+
+      if (IS_BUILD) {
+        // Copy the NPM modules you need in production for the server
+        // Meteor 1.3 might fix that later ¯\_(ツ)_/¯
+        data = 'global.require = ' + function(module) {
+          try {
+            return Npm.require(module);
+          } catch(e) {
+            return Npm.require('./assets/app/.webpack/node_modules/' + module);
+          }
+        }.toString() + ';\n' + data;
+
+        readPackageJson(file, CWD + '/package.json', []);
+      } else {
+        // Polyfill the require to Meteor require
+        data = 'global.require = Npm.require;\n' + data;
       }
     }
 
@@ -572,6 +593,11 @@ function compile(target, entryFile, configFiles, webpackConfig) {
 
     if (!IS_DEBUG && target !== 'server') {
       addAssets(target, file, fs);
+    }
+
+
+    if (target === 'server' && IS_BUILD) {
+
     }
   }
 }
@@ -597,6 +623,42 @@ function addAssets(target, file, fs) {
       }
     }
   }
+}
+
+function readPackageJson(configFile, jsonFile, addedPackages) {
+  let packageJson;
+
+  try {
+    packageJson = JSON.parse(_fs.readFileSync(jsonFile));
+  } catch(e) {}
+
+  if (packageJson && packageJson.dependencies) {
+    for (let packageName in packageJson.dependencies) {
+      if (addedPackages.indexOf(packageName) < 0) {
+        addedPackages.push(packageName);
+        addNpmPackage(configFile, packageName, '/', addedPackages);
+      }
+    }
+  }
+}
+
+function addNpmPackage(configFile, packageName, currentPath = '/', addedPackages) {
+  const folder = CWD + '/node_modules/' + packageName + currentPath;
+  const files = _fs.readdirSync(folder);
+
+  files.forEach(file => {
+    if (_fs.statSync(folder + file).isDirectory()) {
+      addNpmPackage(configFile, packageName, currentPath + file + '/', addedPackages);
+    } else {
+      configFile.addAsset({
+        path: '.webpack/node_modules/' + packageName + currentPath + file,
+        data: _fs.readFileSync(folder + file)
+      });
+    }
+  });
+
+  // Look for dependencies
+  readPackageJson(configFile, folder + '/package.json', addedPackages);
 }
 
 function compileDevServer(target, entryFile, configFiles, webpackConfig) {
