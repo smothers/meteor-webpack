@@ -21,7 +21,6 @@ let devServerHotMiddleware = {};
 let configHashes = {};
 let webpackStats = null;
 
-const IS_WINDOWS = process.platform === 'win32';
 const CWD = _path.resolve('./');
 const PROCESS_ENV = process.env;
 
@@ -36,11 +35,6 @@ let IS_BUILD =
 let IS_DEBUG =
   argv.indexOf('--production') < 0 &&
   (!IS_BUILD || argv.indexOf('--debug') >= 0);
-
-const RELEASE = fs.readFileSync(CWD + '/.meteor/release').toString();
-const METEOR_VERSION = RELEASE.match(/METEOR\@([a-z0-9\.-]+)/i)[1];
-const METEOR_VERSION_MAJOR = parseInt(METEOR_VERSION.match(/^[0-9]+/)[0]);
-const METEOR_VERSION_MINOR = parseInt(METEOR_VERSION.match(/^[0-9]+\.([0-9]+)/)[1]);
 
 WebpackCompiler = class WebpackCompiler {
   processFilesForTarget(files, options) {
