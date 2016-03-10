@@ -84,6 +84,7 @@ You can visit the package documentation for more details on the settings you can
 - [`webpack:json`](https://atmospherejs.com/webpack/json): Import a JSON files
 - [`webpack:html`](https://atmospherejs.com/webpack/html): Import HTML files into a string
 - [`webpack:markdown`](https://atmospherejs.com/webpack/markdown): Import Markdown files into an HTML string
+- [`webpack:jade`](https://atmospherejs.com/webpack/jade): Import Jade files (.jade) into a string
 
 ### Languages
 - [`webpack:typescript`](https://atmospherejs.com/webpack/typescript): Support for typescript (.ts and .tsx)
