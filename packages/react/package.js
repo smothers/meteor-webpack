@@ -1,6 +1,6 @@
 Package.describe({
     name: 'webpack:react',
-    version: '1.1.2',
+    version: '1.1.3',
     summary: 'Integrate React with Webpack',
     git: 'https://github.com/thereactivestack/meteor-webpack.git',
     documentation: 'README.md'

@@ -1,6 +1,6 @@
 Package.describe({
     name: 'webpack:sass',
-    version: '1.0.2',
+    version: '1.1.0',
     summary: 'Integrate SASS (.scc) import with Webpack',
     git: 'https://github.com/thereactivestack/meteor-webpack.git',
     documentation: 'README.md'

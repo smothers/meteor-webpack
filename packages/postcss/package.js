@@ -1,6 +1,6 @@
 Package.describe({
     name: 'webpack:postcss',
-    version: '1.0.1',
+    version: '1.1.0',
     summary: 'Integrate PostCSS (.css) import with Webpack',
     git: 'https://github.com/thereactivestack/meteor-webpack.git',
     documentation: 'README.md'
