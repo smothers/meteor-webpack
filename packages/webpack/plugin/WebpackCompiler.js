@@ -278,7 +278,9 @@ function readPackageConfig(platform, webpackConfig, unibuilds, settings) {
     }
   }
 
-  configs = configs.sort(config => config.weight).map(config => config.config);
+  configs = configs
+    .sort((config1, config2) => config1.weight > config2.weight)
+    .map(config => config.config);
 
   return {
     dependencies: deps,
