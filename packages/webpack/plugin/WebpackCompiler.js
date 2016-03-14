@@ -1,8 +1,6 @@
 const webpack = Npm.require('webpack');
 const _ = Npm.require('underscore');
 const MemoryFS = Npm.require('memory-fs');
-const shell = Npm.require('shelljs');
-const mkdirp = Npm.require('mkdirp');
 
 const fs = Plugin.fs;
 const path = Plugin.path;
@@ -10,7 +8,6 @@ const path = Plugin.path;
 const _fs = Npm.require('fs');
 const _path = Npm.require('path');
 
-const npm = Npm.require('npm');
 const http = Npm.require('http');
 const connect = Npm.require('connect');
 const cors = Npm.require('cors');

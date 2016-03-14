@@ -22,14 +22,11 @@ Package.registerBuildPlugin({
       'underscore': '1.8.3',
       'connect': '3.4.0',
       'cors': '2.7.1',
-      'npm': '2.14.15',
-      'webpack': '1.12.9',
-      'webpack-dev-middleware': '1.4.0',
-      'webpack-hot-middleware': '2.6.0',
+      'webpack': '1.12.14',
+      'webpack-dev-middleware': '1.5.1',
+      'webpack-hot-middleware': '2.10.0',
       'memory-fs': '0.3.0',
-      'mime': '1.3.4',
-      'shelljs': '0.5.3',
-      'mkdirp': '0.5.1'
+      'mime': '1.3.4'
     }
 });
 
