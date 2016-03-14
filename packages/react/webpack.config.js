@@ -48,23 +48,15 @@ function config(settings, require) {
     tsConfig.compilerOptions = {};
   }
 
-  tsConfig.compilerOptions.target = 'es6';
-  tsConfig.compilerOptions.jsx = 'react';
-  tsConfig.compilerOptions.sourceMap = true;
-  tsConfig.compilerOptions.experimentalDecorators = true;
-  tsConfig.compilerOptions.module = 'commonjs';
+  if (typeof tsConfig.compilerOptions.target === 'undefined') { tsConfig.compilerOptions.target = 'es6'; }
+  if (typeof tsConfig.compilerOptions.jsx === 'undefined') { tsConfig.compilerOptions.jsx = 'react'; }
+  if (typeof tsConfig.compilerOptions.sourceMap === 'undefined') { tsConfig.compilerOptions.sourceMap = true; }
+  if (typeof tsConfig.compilerOptions.experimentalDecorators === 'undefined') { tsConfig.compilerOptions.experimentalDecorators = true; }
+  if (typeof tsConfig.compilerOptions.module === 'undefined') { tsConfig.compilerOptions.module = 'commonjs'; }
 
-  if (!tsConfig.exclude) {
-    tsConfig.exclude = [];
-  }
-
-  if (tsConfig.exclude.indexOf('node_modules') < 0) {
-    tsConfig.exclude.push('node_modules');
-  }
-
-  if (tsConfig.exclude.indexOf('.meteor') < 0) {
-    tsConfig.exclude.push('.meteor');
-  }
+  if (!tsConfig.exclude) { tsConfig.exclude = []; }
+  if (tsConfig.exclude.indexOf('node_modules') < 0) { tsConfig.exclude.push('node_modules'); }
+  if (tsConfig.exclude.indexOf('.meteor') < 0) { tsConfig.exclude.push('.meteor'); }
 
   if (!babelSettings.presets) {
     babelSettings.presets = [];
