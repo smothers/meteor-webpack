@@ -51,7 +51,7 @@ function config(settings, require) {
       { test: /\.vue$/, loader: 'vue', exclude: /\.meteor|node_modules/ },
       { test: /\.js$/, loader: 'babel', exclude: /\.meteor|node_modules/ }
     ],
-    extensions: ['.vue'],
+    extensions: ['.js', '.vue'],
     config: {
       babel: babelSettings
     }
