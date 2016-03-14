@@ -390,7 +390,11 @@ function prepareConfig(target, webpackConfig, usingDevServer, settings) {
   }
 
   if (IS_DEBUG) {
-    webpackConfig.devtool = webpackConfig.devtool || 'cheap-eval-source-map';
+    if (target === 'server') {
+      webpackConfig.devtool = webpackConfig.devtool || 'cheap-source-map';
+    } else {
+      webpackConfig.devtool = webpackConfig.devtool || 'cheap-eval-source-map';
+    }
 
     if (!webpackConfig.devServer) {
       webpackConfig.devServer = {};
