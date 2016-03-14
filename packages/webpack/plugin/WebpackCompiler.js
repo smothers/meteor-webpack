@@ -411,7 +411,7 @@ function prepareConfig(target, webpackConfig, usingDevServer, settings) {
     webpackConfig.devtool = webpackConfig.devtool || 'cheap-source-map';
   }
 
-  if (usingDevServer && settings.packages.indexOf('webpack:react') >= 0) {
+  if (usingDevServer) {
     let options = 'path=' + webpackConfig.devServer.protocol + '//' + webpackConfig.devServer.host + ':' + webpackConfig.devServer.port + '/__webpack_hmr';
 
     if (webpackConfig.hotMiddleware) {
