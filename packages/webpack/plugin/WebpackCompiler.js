@@ -23,6 +23,8 @@ const PROCESS_ENV = process.env;
 
 const argv = process.argv.map(arg => arg.toLowerCase());
 
+const IS_MAC = process.platform === 'darwin';
+
 // Detect production mode
 let IS_BUILD =
   argv.indexOf('build') >= 0 ||
@@ -696,6 +698,19 @@ function compileDevServer(target, entryFile, configFiles, webpackConfig) {
   }
 
   const compiler = webpack(webpackConfig);
+
+  if (!webpackConfig.watchOptions) {
+    webpackConfig.watchOptions = {};
+  }
+
+  // Temp fix for mac so CPU usage doesn't go to the roof
+  // until we can ignore .meteor|node_modules folder
+  // https://github.com/webpack/watchpack/issues/2
+  if (IS_MAC) {
+    if (typeof webpackConfig.watchOptions.poll === 'undefined') {
+      webpackConfig.watchOptions.poll = 1000;
+    }
+  }
 
   devServerMiddleware[target] = Npm.require('webpack-dev-middleware')(compiler, {
     noInfo: true,
