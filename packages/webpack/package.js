@@ -39,6 +39,7 @@ Package.onUse(function(api) {
     api.use('webpack:assets@1.0.0');
     api.use('webpack:css@1.0.0');
 
-    // Meteor polyfill for ecmascript
-    api.imply('ecmascript-runtime@0.2.6')
+    // Meteor polyfill for ecmascript and Promise
+    api.imply('ecmascript-runtime@0.2.6');
+    api.imply('promise@0.5.1');
 });
