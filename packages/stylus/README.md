@@ -16,6 +16,8 @@ Meteor package to integrate Stylus (.styl) import with [Webpack](https://github.
 }
 ```
 
+Note: Make sure to include the stylus plugins you use in your package.json file.
+
 ## Credits
 Thanks to @zaklampert for writing this package!
 Thanks to @jptissot for introducing configurable plugin support
