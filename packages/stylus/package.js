@@ -1,6 +1,6 @@
 Package.describe({
     name: 'webpack:stylus',
-    version: '1.1.0',
+    version: '1.1.1',
     summary: 'Integrate Stylus import with Webpack',
     git: 'https://github.com/thereactivestack/meteor-webpack.git',
     documentation: 'README.md'
