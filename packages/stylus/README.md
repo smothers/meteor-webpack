@@ -14,6 +14,7 @@ Meteor package to integrate Stylus (.styl) import with [Webpack](https://github.
     {"typographic": "~typographic/stylus/typographic.styl" }
   ]
 }
+```
 
 ## Credits
 Thanks to @zaklampert for writing this package!
