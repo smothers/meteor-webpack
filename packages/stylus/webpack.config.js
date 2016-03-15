@@ -18,7 +18,7 @@ function config(settings, require) {
   var stylus = ((settings.stylus || []).reduce(function(prev,curr){
     var k = Object.keys(curr)[0];
     var v = curr[k];
-    prev.use.push("require('" + k + "')()");
+    prev.use.push(require(k)());
     prev.import.push(v);
     return prev;
   }, { use: [], import:[] })  || { use: [], import:[] }) ;
