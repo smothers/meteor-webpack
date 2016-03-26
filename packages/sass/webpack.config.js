@@ -17,10 +17,8 @@ function config(settings, require) {
 
   if(settings.sassResources){
     cssLoader = settings.cssLoader + '!sass!sass-resources?' + JSON.stringify(settings.sass || {});
-    console.log(cssLoader);
   }else {
     cssLoader = settings.cssLoader + '!sass?' + JSON.stringify(settings.sass || {});
-    console.log(cssLoader);
   }
 
   if (settings.cssExtract) {
