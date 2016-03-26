@@ -81,7 +81,8 @@ WebpackCompiler = class WebpackCompiler {
         extensions: ['']
       },
       externals: {},
-      devServer: settings.devServer
+      devServer: settings.devServer,
+      devtool: settings.devtool
     };
 
     if (settings.root) {
