@@ -407,7 +407,7 @@ function prepareConfig(target, webpackConfig, usingDevServer, settings) {
 
     webpackConfig.devServer.protocol = webpackConfig.devServer.protocol || 'http:';
     webpackConfig.devServer.host = webpackConfig.devServer.host || 'localhost';
-    webpackConfig.devServer.port = webpackConfig.devServer.port || 3500;
+    webpackConfig.devServer.port = process.env.WEBPACK_PORT || webpackConfig.devServer.port || 3500;
   } else {
     webpackConfig.devtool = webpackConfig.devtool || 'cheap-source-map';
   }
