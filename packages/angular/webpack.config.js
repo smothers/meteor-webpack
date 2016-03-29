@@ -47,10 +47,10 @@ function config(settings, require) {
 
   return {
     loaders: [
-      { test: /\.html\.import$/, loader: 'html' },
+      { test: /\.import\.html$/, loader: 'html' },
       { test: /\.js$/, loader: 'ng-annotate!babel', exclude: /\.meteor|node_modules/ }
     ],
-    extensions: ['.js', '.import'],
+    extensions: ['.js', '.import.html'],
     config: {
       babel: babelSettings
     }
