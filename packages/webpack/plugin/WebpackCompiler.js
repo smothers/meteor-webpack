@@ -89,6 +89,10 @@ WebpackCompiler = class WebpackCompiler {
       webpackConfig.resolve.root = _path.join(CWD, settings.root);
     }
 
+    if (settings.externals) {
+      webpackConfig.externals = settings.externals;
+    }
+
     const unibuilds = files[0]._resourceSlot.packageSourceBatch.processor.unibuilds;
     settings.packages = unibuilds.map(unibuild => unibuild.pkg.name);
     generateExternals(webpackConfig, unibuilds);

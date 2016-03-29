@@ -53,6 +53,7 @@ You can tweak your Webpack settings by using a webpack.json file in the root of 
 - `disableDedupePlugin` (bool): Disable the DedupePlugin (default to `false`)
 - `disableOccurenceOrderPlugin` (bool): Disable the OccurenceOrderPlugin (default to `false`)
 - `postcss`: Array of plugins to use
+- `externals` (object): Map external modules to a global variable 
 - ...
 
 See your package readme for more infos on the settings available.
