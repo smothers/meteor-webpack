@@ -4,14 +4,22 @@ function dependencies(settings) {
   return {
     devDependencies: {
       'sass-loader': '^3.1.2',
-      'node-sass': '^3.4.2'
+      'node-sass': '^3.4.2',
+      "sass-resources-loader": "1.0.2"
     }
   };
 }
 
 function config(settings, require) {
   var plugins = [];
-  var cssLoader = settings.cssLoader + '!sass?' + JSON.stringify(settings.sass || {});
+  var cssLoader;
+  var config = settings.sassResources ? { "sassResources":settings.sassResources }  : {};
+
+  if(settings.sassResources){
+    cssLoader = settings.cssLoader + '!sass!sass-resources?' + JSON.stringify(settings.sass || {});
+  }else {
+    cssLoader = settings.cssLoader + '!sass?' + JSON.stringify(settings.sass || {});
+  }
 
   if (settings.cssExtract) {
     var ExtractTextPlugin = require('extract-text-webpack-plugin');
@@ -20,6 +28,7 @@ function config(settings, require) {
 
   return {
     loaders: [{ test: /\.scss$/, loader: cssLoader }],
-    extensions: ['.scss']
+    extensions: ['.scss'],
+    config:config
   };
 }
