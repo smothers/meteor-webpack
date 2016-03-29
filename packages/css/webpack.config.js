@@ -28,7 +28,7 @@ function config(settings, require) {
     if (settings.platform === 'server') {
       settings.cssLoader = 'css/locals?' + moduleStr + 'localIdentName=[hash:base64:5]';
     } else {
-      settings.cssLoader = 'style', 'css?' + moduleStr + 'localIdentName=[hash:base64:5]';
+      settings.cssLoader = 'css?' + moduleStr + 'localIdentName=[hash:base64:5]';
       settings.cssExtract = true;
     }
   }
@@ -38,7 +38,7 @@ function config(settings, require) {
   if (settings.cssExtract) {
     var ExtractTextPlugin = require('extract-text-webpack-plugin');
     plugins.push(new ExtractTextPlugin('style.css'));
-    cssLoader = ExtractTextPlugin.extract(cssLoader);
+    cssLoader = ExtractTextPlugin.extract('style', cssLoader);
   }
 
   // Let postcss control CSS files if it is there
