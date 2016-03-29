@@ -42,7 +42,7 @@ function config(settings, require) {
 
   if (settings.cssExtract) {
     var ExtractTextPlugin = require('extract-text-webpack-plugin');
-    cssLoader = ExtractTextPlugin.extract(cssLoader);
+    cssLoader = ExtractTextPlugin.extract('style', cssLoader);
   }
 
   if (cssLoader) {
