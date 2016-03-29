@@ -2,4 +2,4 @@
 Meteor package to integrate LESS import with [Webpack](https://atmospherejs.com/webpack/webpack)
 
 ## Settings (webpack.json)
-- `css.module`: Enable local CSS by default
+- `css.modules`: Enable local CSS by default

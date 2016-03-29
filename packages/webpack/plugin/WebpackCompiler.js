@@ -157,7 +157,7 @@ function updateNpmPackages(target, configs) {
   let dependencies = configs.dependencies;
 
   let devDependencies = _.extend({
-    'webpack': '^1.12.9',
+    'webpack': '^1.12.14',
     'webpack-hot-middleware': '^2.4.1'
   }, configs.devDependencies);
 
@@ -396,9 +396,9 @@ function prepareConfig(target, webpackConfig, usingDevServer, settings) {
 
   if (IS_DEBUG) {
     if (target === 'server') {
-      webpackConfig.devtool = webpackConfig.devtool || 'cheap-source-map';
+      webpackConfig.devtool = webpackConfig.devtool || 'cheap-module-source-map';
     } else {
-      webpackConfig.devtool = webpackConfig.devtool || 'cheap-eval-source-map';
+      webpackConfig.devtool = webpackConfig.devtool || 'cheap-module-eval-source-map';
     }
 
     if (!webpackConfig.devServer) {

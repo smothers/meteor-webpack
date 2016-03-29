@@ -15,20 +15,29 @@ function config(settings, require) {
   var loaders = [];
   var plugins = [];
 
-  // Disable if webpack:postcss is present
-  var moduleStr = (settings.css && settings.css.module) ? 'module&' : '';
+  var queries = settings.css || {};
+
+  // Support old setting
+  if (queries.module) {
+    queries.modules = queries.module;
+    delete queries.module;
+  }
+
+  if (!queries.localIdentName) {
+    queries.localIdentName = '[name]__[local]__[hash:base64:5]';
+  }
 
   if (settings.isDebug) {
     if (settings.platform === 'server') {
-      settings.cssLoader = 'css/locals?' + moduleStr + 'localIdentName=[name]__[local]__[hash:base64:5]';
+      settings.cssLoader = 'css/locals?' + JSON.stringify(queries);
     } else {
-      settings.cssLoader = 'style!css?' + moduleStr + 'localIdentName=[name]__[local]__[hash:base64:5]';
+      settings.cssLoader = 'style!css?' + JSON.stringify(queries);
     }
   } else {
     if (settings.platform === 'server') {
-      settings.cssLoader = 'css/locals?' + moduleStr + 'localIdentName=[hash:base64:5]';
+      settings.cssLoader = 'css/locals?' + JSON.stringify(queries);
     } else {
-      settings.cssLoader = 'css?' + moduleStr + 'localIdentName=[hash:base64:5]';
+      settings.cssLoader = 'css?' + JSON.stringify(queries);
       settings.cssExtract = true;
     }
   }
