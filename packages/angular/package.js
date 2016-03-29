@@ -8,7 +8,7 @@ Package.describe({
 
 Package.onUse(function(api) {
   api.use([
-    'webpack:core-config@1.0.0'
+    'webpack:core-config@1.0.1'
   ]);
 
   api.add_files(['webpack.config.js']);

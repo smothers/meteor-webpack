@@ -1,6 +1,6 @@
 Package.describe({
     name: 'webpack:vue',
-    version: '1.0.1',
+    version: '1.0.2',
     summary: 'Integrate Vue.js with Webpack',
     git: 'https://github.com/thereactivestack/meteor-webpack.git',
     documentation: 'README.md'
@@ -8,7 +8,7 @@ Package.describe({
 
 Package.onUse(function(api) {
   api.use([
-    'webpack:core-config@1.0.0'
+    'webpack:core-config@1.0.1'
   ]);
 
   api.add_files(['webpack.config.js']);

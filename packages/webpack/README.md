@@ -71,8 +71,8 @@ You can visit the package documentation for more details on the settings you can
 
 ### Framework
 - [`webpack:react`](https://atmospherejs.com/webpack/react): Use React and JSX with Webpack (.js and .jsx)
+- [`webpack:angular`](https://atmospherejs.com/webpack/angular): Use Angular with Webpack (.js and .import.html)
 - [`webpack:vue`](https://atmospherejs.com/webpack/vue): Use Vue.js with Webpack (.js and .vue)
-- `webpack:angular` *(coming soon)*: Use Angular with Webpack (.js and .html)
 - `webpack:blaze` *(coming soon)*: Use Blaze with Webpack (.js and .html)
 
 ### Stylesheets
