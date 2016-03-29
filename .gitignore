@@ -2,3 +2,6 @@
 .meteor
 node_modules
 npm-debug.log
+
+packages/webpack/.npm/plugin/webpack_webpack
+packages/webpack/.npm/plugin/webpack:webpack
