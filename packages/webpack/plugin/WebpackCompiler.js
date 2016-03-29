@@ -85,12 +85,16 @@ WebpackCompiler = class WebpackCompiler {
       devtool: settings.devtool
     };
 
-    if (settings.root) {
+    if (settings.root && typeof settings.root === 'string') {
       webpackConfig.resolve.root = _path.join(CWD, settings.root);
     }
 
-    if (settings.externals) {
+    if (settings.externals && typeof settings.externals === 'object' && !Array.isArray(settings.externals)) {
       webpackConfig.externals = settings.externals;
+    }
+
+    if (settings.noParse && typeof settings.noParse === 'object' && Array.isArray(settings.noParse)) {
+      webpackConfig.module.noParse = new RegExp('(' + settings.noParse.join('|') + ')');
     }
 
     const unibuilds = files[0]._resourceSlot.packageSourceBatch.processor.unibuilds;
