@@ -7,7 +7,6 @@ Seamlessly integrate Webpack to improve Meteor build system<br />
 - Instant feedback when you change your files (not even a page refresh!)
 - Organize your assets with the code they belong
 - Faster page loading by splitting your code in multiple chunks
-- ES6 modules while Meteor 1.3 is far from being released!
 
 ## How can I get started?
 You can learn how to use Webpack with Meteor by [getting the free course on The Reactive Stack](https://thereactivestack.com).
