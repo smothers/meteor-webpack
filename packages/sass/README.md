@@ -9,4 +9,4 @@ So you can use your shared variables & mixins across all SASS styles without man
 - `css.modules`: Enable local CSS by default
 - `sass`: Setting object with node-sass options
 - `sass.includePaths`: Set an array of includedPaths for the import
-- `sassResources`: Set an single or array of paths of shared varaibles & mixins.
+- `sassResources`: Set an single or array of paths of shared variables & mixins.
