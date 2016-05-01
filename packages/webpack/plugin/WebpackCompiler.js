@@ -43,8 +43,6 @@ WebpackCompiler = class WebpackCompiler {
       IS_DEBUG = options.buildMode !== 'production';
     }
 
-    checkMigration();
-
     files = files.filter(file => file.getPackageName() !== 'webpack:webpack');
     const packageFiles = files.filter(file => file.getPackageName() !== null);
 
@@ -165,8 +163,8 @@ function updateNpmPackages(target, configs) {
   let dependencies = configs.dependencies;
 
   let devDependencies = _.extend({
-    'webpack': '^1.12.14',
-    'webpack-hot-middleware': '^2.4.1'
+    'webpack': '^1.13.0',
+    'webpack-hot-middleware': '^2.10.0'
   }, configs.devDependencies);
 
   let pkg = {};
@@ -404,9 +402,9 @@ function prepareConfig(target, webpackConfig, usingDevServer, settings) {
 
   if (IS_DEBUG) {
     if (target === 'server') {
-      webpackConfig.devtool = webpackConfig.devtool || 'cheap-module-source-map';
+      webpackConfig.devtool = webpackConfig.devtool || '#cheap-module-source-map';
     } else {
-      webpackConfig.devtool = webpackConfig.devtool || 'cheap-module-eval-source-map';
+      webpackConfig.devtool = webpackConfig.devtool || '#cheap-module-eval-source-map';
     }
 
     if (!webpackConfig.devServer) {
@@ -417,7 +415,7 @@ function prepareConfig(target, webpackConfig, usingDevServer, settings) {
     webpackConfig.devServer.host = webpackConfig.devServer.host || 'localhost';
     webpackConfig.devServer.port = process.env.WEBPACK_PORT || webpackConfig.devServer.port || 3500;
   } else {
-    webpackConfig.devtool = webpackConfig.devtool || 'cheap-source-map';
+    webpackConfig.devtool = webpackConfig.devtool || '#cheap-source-map';
   }
 
   if (usingDevServer) {
@@ -793,14 +791,6 @@ function generateExternals(webpackConfig, isobuilds) {
         }
       }
     }
-
-    // Use React from Meteor instead of NPM if we use the package
-    if (isobuilds[i].pkg.name === 'react-runtime') {
-      webpackConfig.externals.React = 'React';
-      webpackConfig.externals.react = 'React';
-      webpackConfig.externals.ReactDOM = 'ReactDOM';
-      webpackConfig.externals['react-dom'] = 'ReactDOM';
-    }
   }
 
   // Make sure jQuery isn't undefined if not available on the server
@@ -825,63 +815,4 @@ function findAllDependencies(modulesPath, isNodeModules) {
   });
 
   return modules;
-}
-
-function checkMigration() {
-  let hasMigrated = false;
-
-  if (fs.existsSync(CWD + '/node_modules')) {
-    const symPath = fs.realpathSync(CWD + '/node_modules');
-
-    if (symPath && symPath.indexOf('.meteor/local/webpack-npm') > 0) {
-      fs.unlinkSync(CWD + '/node_modules');
-      hasChanged = true;
-    }
-  }
-
-  if (fs.existsSync(CWD + '/webpack.packages.json') && !fs.existsSync(CWD + '/package.json')) {
-    try {
-      const deps = JSON.parse(fs.readFileSync(CWD + '/webpack.packages.json').toString());
-      const depsName = Object.keys(deps);
-
-      const dependenciesName = depsName.filter(name =>
-        !/-loader$/.test(name) &&
-        name.indexOf('webpack') < 0 &&
-        name.indexOf('babel') < 0 &&
-        name.indexOf('react-transform') !== 0 &&
-        name !== 'redbox-react'
-      );
-      const dependencies = {};
-      dependenciesName.forEach(name => dependencies[name] = deps[name]);
-
-      const devDependenciesName = depsName.filter(name =>
-        /-loader$/.test(name) ||
-        name.indexOf('webpack') >= 0 ||
-        name.indexOf('babel') >= 0 ||
-        name.indexOf('react-transform') === 0 ||
-        name === 'redbox-react'
-      );
-      const devDependencies = {};
-      devDependenciesName.forEach(name => devDependencies[name] = deps[name]);
-
-      const cwdPaths = CWD.split('/');
-
-      fs.writeFileSync(CWD + '/package.json', JSON.stringify({
-        name: cwdPaths[cwdPaths.length - 1],
-        private: true,
-        main: 'entry/server/index.js',
-        browser: 'entry/client/index.js',
-        dependencies,
-        devDependencies
-      }, null, 2));
-
-      fs.renameSync(CWD + '/webpack.packages.json', CWD + '/webpack.packages.json.backup');
-      hasChanged = true;
-    } catch (e) {}
-  }
-
-  if (hasMigrated) {
-    console.log('The project has been migrated. You must run npm install in your project folder to continue.');
-    process.exit(1);
-  }
 }

@@ -24,7 +24,6 @@ meteor remove ecmascript
 meteor add webpack:webpack
 meteor add webpack:react
 meteor add webpack:less
-meteor add react-runtime # Skip this step if you want to use the NPM version
 meteor add react-meteor-data
 meteor
 npm install
