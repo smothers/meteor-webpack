@@ -3,8 +3,8 @@ var weight = 100;
 function dependencies() {
   return {
     dependencies: {
-      // React has to be there for peerDependencies every though we are using the Meteor package
-      'react': '~0.14.1',
+      'react': '^15.0.0',
+      'react-dom': '^15.0.0'
     },
     devDependencies: {
       'babel': '^6.3.26',
@@ -111,27 +111,11 @@ function config(settings, require) {
   }
 
   var usingMeteorReact = settings.packages.indexOf('react-runtime') >= 0;
-  var externals = {};
   var extensions = ['.js', '.jsx'];
   var loaders = [
+    { test: /\/node_modules\/react\/react\.js$/, loader: 'expose?React' },
     { test: /\.jsx?$/, loader: 'babel', query: babelSettings, exclude: /\.meteor|node_modules/ }
   ];
-
-  if (usingMeteorReact) {
-    externals = {
-      'react-addons-transition-group': 'React.addons.TransitionGroup',
-      'react-addons-css-transition-group': 'React.addons.CSSTransitionGroup',
-      'react-addons-linked-state-mixin': 'React.addons.LinkedStateMixin',
-      'react-addons-create-fragment': 'React.addons.createFrament',
-      'react-addons-update': 'React.addons.update',
-      'react-addons-pure-render-mixin': 'React.addons.PureRenderMixin',
-      'react-addons-test-utils': 'React.addons.TestUtils',
-      'react-addons-perf': 'React.addons.Perf'
-    };
-  } else {
-    // Expose window.React
-    loaders.unshift({ test: /\/node_modules\/react\/react\.js$/, loader: 'expose?React' });
-  }
 
   if (settings.packages.indexOf('webpack:typescript') >= 0) {
     loaders.push({ test: /\.tsx$/, loader: 'babel?' + JSON.stringify(babelSettings) + '!ts?' + JSON.stringify(tsConfig), exclude: /\.meteor|node_modules/ });
@@ -140,7 +124,6 @@ function config(settings, require) {
 
   return {
     loaders: loaders,
-    extensions: extensions,
-    externals: externals
+    extensions: extensions
   };
 }

@@ -584,7 +584,7 @@ function compile(target, entryFile, configFiles, webpackConfig) {
           }
         }.toString() + ';\n' + data;
 
-        readPackageJson(file, CWD + '/package.json', []);
+        readPackageJson(file, '/', [], []);
       } else {
         // Polyfill the require to Meteor require
         data = 'global.require = Npm.require;\n' + data;
@@ -631,40 +631,56 @@ function addAssets(target, file, fs) {
   }
 }
 
-function readPackageJson(configFile, jsonFile, addedPackages) {
+function readPackageJson(configFile, jsonFolder, addedPackages, nestedModules) {
   let packageJson;
 
   try {
-    packageJson = JSON.parse(_fs.readFileSync(jsonFile));
+    packageJson = JSON.parse(_fs.readFileSync(CWD + jsonFolder + 'package.json'));
   } catch(e) {}
 
   if (packageJson && packageJson.dependencies) {
+    nestedModules.unshift(jsonFolder);
+
     for (let packageName in packageJson.dependencies) {
       if (addedPackages.indexOf(packageName) < 0) {
         addedPackages.push(packageName);
-        addNpmPackage(configFile, packageName, '/', addedPackages);
+        addNpmPackage(configFile, packageName, addedPackages, nestedModules);
       }
     }
+
+    nestedModules.shift();
   }
 }
 
-function addNpmPackage(configFile, packageName, currentPath = '/', addedPackages) {
-  const folder = CWD + '/node_modules/' + packageName + currentPath;
-  const files = _fs.readdirSync(folder);
+function addNpmPackage(configFile, packageName, addedPackages, nestedModules) {
+  // Find in which folder the module is
+
+  const folder = nestedModules.find(path => _fs.existsSync(CWD + path + '/node_modules/' + packageName + '/package.json')) + 'node_modules/' + packageName + '/';
+
+  if (!folder) {
+    console.log('Cannot find NPM module "' + packageName + '"');
+    process.exit(1);
+  }
+
+  addNpmPackageContent(configFile, packageName, addedPackages, nestedModules, folder);
+
+  // Look for dependencies
+  readPackageJson(configFile, folder, addedPackages, nestedModules);
+}
+
+function addNpmPackageContent(configFile, packageName, addedPackages, nestedModules, folder) {
+  const files = _fs.readdirSync(CWD + folder);
 
   files.forEach(file => {
-    if (_fs.statSync(folder + file).isDirectory()) {
-      addNpmPackage(configFile, packageName, currentPath + file + '/', addedPackages);
+    if (_fs.statSync(CWD + folder + file).isDirectory()) {
+      addNpmPackageContent(configFile, packageName, addedPackages, nestedModules, folder + file + '/');
     } else {
       configFile.addAsset({
-        path: '.webpack/node_modules/' + packageName + currentPath + file,
-        data: _fs.readFileSync(folder + file)
+        path: '.webpack' + folder + file,
+        data: _fs.readFileSync(CWD + folder + file)
       });
     }
   });
-
-  // Look for dependencies
-  readPackageJson(configFile, folder + '/package.json', addedPackages);
 }
 
 function compileDevServer(target, entryFile, configFiles, webpackConfig) {
