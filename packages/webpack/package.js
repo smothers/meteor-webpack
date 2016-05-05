@@ -31,13 +31,14 @@ Package.registerBuildPlugin({
 });
 
 Package.onUse(function(api) {
-    api.versionsFrom('1.2');
+    api.versionsFrom('1.3');
 
     api.use('isobuild:compiler-plugin@1.0.0');
     api.use('webpack:reload@1.0.0');
 
     api.use('webpack:assets@1.0.1');
     api.use('webpack:css@1.1.1');
+    api.use('webpack:json@1.0.1');
 
     // Meteor polyfill for ecmascript and Promise
     api.imply('ecmascript-runtime@0.2.6');
