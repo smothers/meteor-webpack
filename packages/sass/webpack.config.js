@@ -20,6 +20,11 @@ function config(settings, require) {
   var config = {};
   var cssLoader = settings.cssLoader + '!sass?' + JSON.stringify(settings.sass || {});
 
+  // Clone and add indentedSyntax param
+  var indentedLoader = JSON.parse(JSON.stringify(settings.sass || {}));
+  indentedLoader.indentedSyntax = true;
+  indentedLoader = settings.cssLoader + '!sass?' + JSON.stringify(indentedLoader);
+
   if (settings.sassResources) {
     config.sassResources = settings.sassResources;
     cssLoader += '!sass-resources';
@@ -31,8 +36,11 @@ function config(settings, require) {
   }
 
   return {
-    loaders: [{ test: /\.scss$/, loader: cssLoader }],
-    extensions: ['.scss'],
+    loaders: [
+      { test: /\.scss$/, loader: cssLoader },
+      { test: /\.sass$/, loader: indentedLoader }
+    ],
+    extensions: ['.scss', '.sass'],
     config: config
   };
 }

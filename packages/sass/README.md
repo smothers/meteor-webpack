@@ -1,5 +1,11 @@
 # webpack:sass by [The Reactive Stack](https://thereactivestack.com)
-Meteor package to integrate SASS (.scss) import with [Webpack](https://github.com/thereactivestack/meteor-webpack)
+Meteor package to integrate SASS (.scss and .sass) import with [Webpack](https://github.com/thereactivestack/meteor-webpack)
+
+## WARNING: If you are getting "ERROR in Missing binding"
+You just have to run this command:
+```sh
+meteor npm rebuild node-sass
+```
 
 It includes `sass-resources-loader`
 This loader will `@import` your SASS resources into every required SASS module.
