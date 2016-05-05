@@ -4,7 +4,8 @@ function dependencies() {
   return {
     dependencies: {
       'react': '^15.0.0',
-      'react-dom': '^15.0.0'
+      'react-dom': '^15.0.0',
+      'react-addons-pure-render-mixin': '^15.0.0'
     },
     devDependencies: {
       'babel': '^6.3.26',
