@@ -43,8 +43,6 @@ function config(settings, require) {
     tsConfig = JSON.parse(tsConfigData);
   }
 
-  tsConfig.transpileOnly = true;
-
   if (!tsConfig.compilerOptions) {
     tsConfig.compilerOptions = {};
   }
