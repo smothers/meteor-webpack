@@ -20,10 +20,10 @@ Package.registerBuildPlugin({
     ],
     npmDependencies: {
       'underscore': '1.8.3',
-      'connect': '3.4.0',
+      'connect': '3.4.1',
       'cors': '2.7.1',
-      'webpack': '1.12.14',
-      'webpack-dev-middleware': '1.5.1',
+      'webpack': '1.13.0',
+      'webpack-dev-middleware': '1.6.1',
       'webpack-hot-middleware': '2.10.0',
       'memory-fs': '0.3.0',
       'mime': '1.3.4'
