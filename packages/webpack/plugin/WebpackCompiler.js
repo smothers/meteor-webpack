@@ -699,78 +699,12 @@ function filterFiles(files, name) {
     .sort((file1, file2) => file1.getPathInPackage().split('/').length - file2.getPathInPackage().split('/').length);
 }
 
-function getLispCase(exportName) {
-  let result = '';
-  let lastWasUpper = false;
-
-  for (let i = 0; i < exportName.length; ++i) {
-    const isUpper = exportName[i] === exportName[i].toUpperCase();
-
-    if (i > 0 && isUpper && !lastWasUpper) {
-      result += '-';
-    }
-
-    result += exportName[i].toLowerCase();
-    lastWasUpper = isUpper;
-  }
-
-  return result;
-}
-
 function generateExternals(webpackConfig, isobuilds) {
-  const npmDependencies = findAllDependencies(CWD);
-  let hasReactPackage = false;
-
   webpackConfig.externals = webpackConfig.externals || {};
 
+  // Support import from Meteor packages
   for (let i = 0; i < isobuilds.length; ++i) {
     const { declaredExports } = isobuilds[i];
-
-    // Support import from Meteor packages
     webpackConfig.externals['meteor/' + isobuilds[i].pkg.name] = 'Package[\'' + isobuilds[i].pkg.name + '\']';
-
-    for (let j = 0; j < declaredExports.length; ++j) {
-      if (!declaredExports[j].testOnly) {
-        const declaredExport = declaredExports[j].name;
-        const lowerCaseExport = declaredExports[j].name.toLowerCase();
-        const lispCaseExport = getLispCase(declaredExport);
-
-        // Don't override a NPM module or user external
-        if (npmDependencies.indexOf(declaredExport.toLowerCase()) < 0 && !webpackConfig.externals[declaredExport]) {
-          webpackConfig.externals[declaredExport] = declaredExport;
-        }
-
-        if (npmDependencies.indexOf(lispCaseExport) < 0 && !webpackConfig.externals[lispCaseExport]) {
-          webpackConfig.externals[lispCaseExport] = declaredExport;
-        }
-
-        if (npmDependencies.indexOf(lowerCaseExport) < 0 && !webpackConfig.externals[lowerCaseExport]) {
-          webpackConfig.externals[lowerCaseExport] = declaredExport;
-        }
-      }
-    }
   }
-
-  // Make sure jQuery isn't undefined if not available on the server
-  if (!webpackConfig.externals.jquery && npmDependencies.indexOf('jquery') < 0) {
-    webpackConfig.externals.jquery = 'jQuery';
-    webpackConfig.externals.jQuery = 'jQuery';
-    webpackConfig.externals.$ = 'jQuery';
-  }
-}
-
-function findAllDependencies(modulesPath, isNodeModules) {
-  const folders = fs.readdirSync(modulesPath).filter(
-    file => file[0] !== '.' && fs.statSync(path.join(modulesPath, file)).isDirectory()
-  );
-
-  let modules = isNodeModules ? folders : [];
-
-  folders.forEach(folder => {
-    modules = modules.concat(
-      findAllDependencies(path.join(modulesPath, folder), folder === 'node_modules')
-    );
-  });
-
-  return modules;
 }
