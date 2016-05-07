@@ -1,6 +1,6 @@
 Package.describe({
     name: 'webpack:typescript',
-    version: '1.0.3',
+    version: '1.0.4',
     summary: 'Integrate TypeScript with Webpack',
     git: 'https://github.com/thereactivestack/meteor-webpack.git',
     documentation: 'README.md'
