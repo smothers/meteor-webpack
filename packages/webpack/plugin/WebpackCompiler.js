@@ -36,13 +36,7 @@ let IS_DEBUG =
   (!IS_BUILD || argv.indexOf('--debug') >= 0);
 
 WebpackCompiler = class WebpackCompiler {
-  processFilesForTarget(files, options) {
-    // Waiting for the PR to be merged
-    // https://github.com/meteor/meteor/pull/5448
-    if (options) {
-      IS_DEBUG = options.buildMode !== 'production';
-    }
-
+  processFilesForTarget(files) {
     files = files.filter(file => file.getPackageName() !== 'webpack:webpack');
     const packageFiles = files.filter(file => file.getPackageName() !== null);
 
@@ -364,7 +358,8 @@ function readWebpackConfig(webpackConfig, target, file, filePath, data) {
   const Meteor = {
     isServer: target === 'server',
     isClient: target !== 'server',
-    isCordova: target === 'cordova'
+    isCordova: target === 'cordova',
+    isProduction: !IS_DEBUG
   };
 
   try {
@@ -457,9 +452,11 @@ function prepareConfig(target, webpackConfig, usingDevServer, settings) {
     'Meteor.isClient': JSON.stringify(target !== 'server'),
     'Meteor.isServer': JSON.stringify(target === 'server'),
     'Meteor.isCordova': JSON.stringify(target === 'cordova'),
+    'Meteor.isProduction': JSON.stringify(!IS_DEBUG),
     'Package.meteor.Meteor.isClient': JSON.stringify(target !== 'server'),
     'Package.meteor.Meteor.isServer': JSON.stringify(target === 'server'),
-    'Package.meteor.Meteor.isCordova': JSON.stringify(target === 'cordova')
+    'Package.meteor.Meteor.isCordova': JSON.stringify(target === 'cordova'),
+    'Package.meteor.Meteor.isProduction': JSON.stringify(!IS_DEBUG)
   };
 
   for (let name in PROCESS_ENV) {
