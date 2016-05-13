@@ -1,6 +1,6 @@
 Package.describe({
     name: 'webpack:reload',
-    version: '1.0.0',
+    version: '1.0.1',
     summary: 'disable the browser reload for webpack (DO NOT INCLUDE THIS PACKAGE BY YOURSELF)',
     git: 'https://github.com/thereactivestack/meteor-webpack.git',
     documentation: 'README.md',

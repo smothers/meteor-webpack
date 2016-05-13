@@ -1,6 +1,6 @@
 Package.describe({
     name: 'webpack:webpack',
-    version: '1.2.1',
+    version: '1.3.0',
     summary: 'Seamlessly integrate Webpack to improve Meteor build system',
     git: 'https://github.com/thereactivestack/meteor-webpack.git',
     documentation: 'README.md'
@@ -34,7 +34,7 @@ Package.onUse(function(api) {
     api.versionsFrom('1.3');
 
     api.use('isobuild:compiler-plugin@1.0.0');
-    api.use('webpack:reload@1.0.0');
+    api.use('webpack:reload@1.0.1');
 
     api.use('webpack:assets@1.0.1');
     api.use('webpack:css@1.1.1');

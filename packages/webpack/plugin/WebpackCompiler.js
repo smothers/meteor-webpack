@@ -7,6 +7,7 @@ const path = Plugin.path;
 
 const _fs = Npm.require('fs');
 const _path = Npm.require('path');
+const _os = Npm.require('os');
 
 const http = Npm.require('http');
 const connect = Npm.require('connect');
@@ -26,14 +27,44 @@ const argv = process.argv.map(arg => arg.toLowerCase());
 const IS_MAC = process.platform === 'darwin';
 
 // Detect production mode
-let IS_BUILD =
+const IS_BUILD =
   argv.indexOf('build') >= 0 ||
   argv.indexOf('bundle') >= 0 ||
   argv.indexOf('deploy') >= 0;
 
-let IS_DEBUG =
+const IS_TEST = argv.indexOf('test') >= 0;
+const IS_FULLAPP_TEST = IS_TEST && argv.indexOf('--full-app') >= 0;
+
+const IS_DEBUG =
   argv.indexOf('--production') < 0 &&
   (!IS_BUILD || argv.indexOf('--debug') >= 0);
+
+if (IS_TEST) {
+  // This makes sure we don't go through big folders like .meteor and node_modules
+  const directories = _fs.readdirSync(CWD).filter(file =>
+    file[0] !== '.' &&
+    file !== 'packages' &&
+    file !== 'node_modules' &&
+    file !== 'bower_components' &&
+    _fs.statSync(_path.join(CWD, file)).isDirectory()
+  );
+
+  _fs.writeFileSync(_path.join(CWD, 'WebpackTestRunner.js'), `
+// This file is auto-generated
+// Any change will be overriden
+const ignoreTarget = Meteor.isServer ? 'client' : 'server';
+
+let testFiles = [];
+
+if (Meteor.isAppTest) {
+${directories.map(directory => `  testFiles = testFiles.concat(require.context('./${directory}', true, /\.(test|spec|app-test|app-spec)(s)?\.(.+)$/i).keys()).map(file => './${directory}' + file.substr(1));\n`)}} else {
+${directories.map(directory => `  testFiles = testFiles.concat(require.context('./${directory}', true, /\.(test|spec)(s)?\.(.+)$/i).keys()).map(file => './${directory}' + file.substr(1));\n`)}}
+
+testFiles
+  .filter(file => file.indexOf('/' + ignoreTarget + '/') < 0)
+  .map(file => require(file));
+`);
+}
 
 WebpackCompiler = class WebpackCompiler {
   processFilesForTarget(files) {
@@ -53,18 +84,38 @@ WebpackCompiler = class WebpackCompiler {
         (platform.indexOf('web') >= 0) ? 'web' : 'server';
 
     const entryFileName = getEntryFileName(shortName);
-    const entryFile = files.find(file => file.getPathInPackage() === entryFileName);
+    let entry;
+    let entryFile;
 
-    if (!entryFile) {
-      console.error('Cannot find the entry point "' + entryFileName + '" for the ' + shortName);
-      process.exit(1);
+    if (IS_TEST && !IS_FULLAPP_TEST) {
+      entryFile = files.find(file => /\.(spec|test)(s)?\.(.*)$/.test(file.getPathInPackage()));
+
+      if (!entryFile) {
+        return;
+      }
+
+      entry = './WebpackTestRunner.js';
+    } else {
+      entryFile = files.find(file => file.getPathInPackage() === entryFileName);
+
+      if (!entryFile) {
+        console.error('Cannot find the entry point "' + entryFileName + '" for the ' + shortName);
+        process.exit(1);
+      }
+
+      entry = entryFile ? _path.join(CWD, entryFile.getPathInPackage()) : null;
+
+      if (IS_FULLAPP_TEST) {
+        entry = [entry, './WebpackTestRunner.js'];
+      }
     }
 
     const settingsFiles = filterFiles(files, 'webpack.json');
     const settings = readSettings(settingsFiles, shortName);
 
     let webpackConfig = {
-      entry: entryFile ? _path.join(CWD, entryFile.getPathInPackage()) : null,
+      context: CWD,
+      entry,
       module: {
         loaders: []
       },
@@ -143,6 +194,8 @@ function readSettings(settingsFiles, platform) {
 
   settings.platform = platform;
   settings.isDebug = IS_DEBUG;
+  settings.isTest = IS_TEST && !IS_FULLAPP_TEST;
+  settings.isAppTest = IS_FULLAPP_TEST;
 
   return settings;
 }
@@ -245,7 +298,7 @@ function runWebpack(shortName, webpackConfig, entryFile, configFiles, settings) 
   });
 
   const usingDevServer =
-    IS_DEBUG && !IS_BUILD &&
+    IS_DEBUG && !IS_BUILD && !IS_TEST &&
     shortName !== 'server' &&
     !PROCESS_ENV.IS_MIRROR; // Integration tests (velocity) should not use dev server
 
@@ -359,6 +412,7 @@ function readWebpackConfig(webpackConfig, target, file, filePath, data) {
     isServer: target === 'server',
     isClient: target !== 'server',
     isCordova: target === 'cordova',
+    isDevelopment: IS_DEBUG,
     isProduction: !IS_DEBUG
   };
 
@@ -452,11 +506,17 @@ function prepareConfig(target, webpackConfig, usingDevServer, settings) {
     'Meteor.isClient': JSON.stringify(target !== 'server'),
     'Meteor.isServer': JSON.stringify(target === 'server'),
     'Meteor.isCordova': JSON.stringify(target === 'cordova'),
+    'Meteor.isDevelopment': JSON.stringify(IS_DEBUG),
     'Meteor.isProduction': JSON.stringify(!IS_DEBUG),
+    'Meteor.isTest': JSON.stringify(IS_TEST && !IS_FULLAPP_TEST),
+    'Meteor.isAppTest': JSON.stringify(IS_FULLAPP_TEST),
     'Package.meteor.Meteor.isClient': JSON.stringify(target !== 'server'),
     'Package.meteor.Meteor.isServer': JSON.stringify(target === 'server'),
     'Package.meteor.Meteor.isCordova': JSON.stringify(target === 'cordova'),
-    'Package.meteor.Meteor.isProduction': JSON.stringify(!IS_DEBUG)
+    'Package.meteor.Meteor.isProduction': JSON.stringify(!IS_DEBUG),
+    'Package.meteor.Meteor.isDevelopment': JSON.stringify(IS_DEBUG),
+    'Package.meteor.Meteor.isTest': JSON.stringify(IS_TEST && !IS_FULLAPP_TEST),
+    'Package.meteor.Meteor.isAppTest': JSON.stringify(IS_FULLAPP_TEST)
   };
 
   for (let name in PROCESS_ENV) {

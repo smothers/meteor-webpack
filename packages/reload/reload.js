@@ -7,7 +7,7 @@ if (Package['velocity:core']) {
 
     patchReload();
   });
-} else {
+} else if (!Meteor.isTest && !Meteor.isAppTest) {
   patchReload();
 }
 
