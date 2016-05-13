@@ -39,35 +39,12 @@ const IS_DEBUG =
   argv.indexOf('--production') < 0 &&
   (!IS_BUILD || argv.indexOf('--debug') >= 0);
 
-if (IS_TEST) {
-  // This makes sure we don't go through big folders like .meteor and node_modules
-  const directories = _fs.readdirSync(CWD).filter(file =>
-    file[0] !== '.' &&
-    file !== 'packages' &&
-    file !== 'node_modules' &&
-    file !== 'bower_components' &&
-    _fs.statSync(_path.join(CWD, file)).isDirectory()
-  );
-
-  _fs.writeFileSync(_path.join(CWD, 'WebpackTestRunner.js'), `
-// This file is auto-generated
-// Any change will be overriden
-const ignoreTarget = Meteor.isServer ? 'client' : 'server';
-
-let testFiles = [];
-
-if (Meteor.isAppTest) {
-${directories.map(directory => `  testFiles = testFiles.concat(require.context('./${directory}', true, /\.(test|spec|app-test|app-spec)(s)?\.(.+)$/i).keys()).map(file => './${directory}' + file.substr(1));\n`)}} else {
-${directories.map(directory => `  testFiles = testFiles.concat(require.context('./${directory}', true, /\.(test|spec)(s)?\.(.+)$/i).keys()).map(file => './${directory}' + file.substr(1));\n`)}}
-
-testFiles
-  .filter(file => file.indexOf('/' + ignoreTarget + '/') < 0)
-  .map(file => require(file));
-`);
-}
-
 WebpackCompiler = class WebpackCompiler {
   processFilesForTarget(files) {
+    if (IS_TEST) {
+      generateTestRunner();
+    }
+
     files = files.filter(file => file.getPackageName() !== 'webpack:webpack');
     const packageFiles = files.filter(file => file.getPackageName() !== null);
 
@@ -764,4 +741,30 @@ function generateExternals(webpackConfig, isobuilds) {
     const { declaredExports } = isobuilds[i];
     webpackConfig.externals['meteor/' + isobuilds[i].pkg.name] = 'Package[\'' + isobuilds[i].pkg.name + '\']';
   }
+}
+
+function generateTestRunner() {
+  // This makes sure we don't go through big folders like .meteor and node_modules
+  const directories = _fs.readdirSync(CWD).filter(file =>
+    file[0] !== '.' &&
+    file !== 'packages' &&
+    file !== 'node_modules' &&
+    file !== 'bower_components' &&
+    _fs.statSync(_path.join(CWD, file)).isDirectory()
+  );
+
+  _fs.writeFileSync(_path.join(CWD, 'WebpackTestRunner.js'), `// This file is auto-generated
+// Any change will be overriden
+const ignoreTarget = Meteor.isServer ? 'client' : 'server';
+
+let testFiles = [];
+
+if (Meteor.isAppTest) {
+${directories.map(directory => `  testFiles = testFiles.concat(require.context('./${directory}', true, /\.(test|spec|app-test|app-spec)(s)?\.(.+)$/i).keys()).map(file => './${directory}' + file.substr(1));\n`)}} else {
+${directories.map(directory => `  testFiles = testFiles.concat(require.context('./${directory}', true, /\.(test|spec)(s)?\.(.+)$/i).keys()).map(file => './${directory}' + file.substr(1));\n`)}}
+
+testFiles
+  .filter(file => file.indexOf('/' + ignoreTarget + '/') < 0)
+  .map(file => require(file));
+`);
 }

@@ -92,7 +92,7 @@ function config(settings, require) {
     babelSettings.plugins.push('add-module-exports');
   }
 
-  if (settings.isDebug && settings.platform !== 'server') {
+  if (settings.isDebug && settings.platform !== 'server' && !IS_TEST) {
     var transforms = [{
       transform: 'react-transform-hmr',
       imports: ['react'],
@@ -121,8 +121,18 @@ function config(settings, require) {
     extensions.push('.tsx');
   }
 
+  var externals = {};
+
+  if (settings.isTest || settings.isAppTest) {
+    // Support for Enzyme
+    externals['react/addons'] = true;
+    externals['react/lib/ExecutionEnvironment'] = true;
+    externals['react/lib/ReactContext'] = true;
+  }
+
   return {
     loaders: loaders,
-    extensions: extensions
+    extensions: extensions,
+    externals: externals
   };
 }
