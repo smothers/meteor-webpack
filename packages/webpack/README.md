@@ -42,6 +42,8 @@ Your entry files are defined within your package.json. The main is your server e
 }
 ```
 
+*Note: Make sure your entry point is NOT within an import folder or it would not work properly.*
+
 ## webpack.json
 You can tweak your Webpack settings by using a webpack.json file in the root of your project.
 
