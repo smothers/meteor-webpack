@@ -1,6 +1,6 @@
 Package.describe({
     name: 'webpack:livescript',
-    version: '1.0.1',
+    version: '1.0.0',
     summary: 'Integrate LiveScript with Webpack',
     git: 'https://github.com/thereactivestack/meteor-webpack.git',
     documentation: 'README.md'
