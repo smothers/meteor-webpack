@@ -89,6 +89,7 @@ You can visit the package documentation for more details on the settings you can
 ### Languages
 - [`webpack:typescript`](https://atmospherejs.com/webpack/typescript): Support for typescript (.ts and .tsx)
 - [`webpack:coffeescript`](https://atmospherejs.com/webpack/coffeescript): Support for coffeescript (.coffee)
+- [`webpack:livescript`](https://atmospherejs.com/webpack/livescript): Support for livescript (.ls)
 
 **If you feel a package is missing and could be beneficial to the community, feel free to open an issue about it!**
 
