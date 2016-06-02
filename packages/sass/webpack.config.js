@@ -20,9 +20,12 @@ function config(settings, require) {
   var config = {};
 
   // a loader without css-modules, used in case the settings have "modulesExcludes"
-  var simpleCssLoader = 'style-loader!css-loader';
+  var simpleCssLoader = 'css?{}';
+  if (settings.packages.indexOf('webpack:postcss') > 0) {
+    simpleCssLoader += '!postcss';
+  }
 
-  if (settings.styles && settings.styles.sourceMap) {
+  if (process.env.NODE_ENV !== 'production' && settings.styles && settings.styles.sourceMap) {
     if (!settings.sass) {
       settings.sass = {};
     }
@@ -47,6 +50,7 @@ function config(settings, require) {
   if (settings.cssExtract) {
     var ExtractTextPlugin = require('extract-text-webpack-plugin');
     cssLoader = ExtractTextPlugin.extract('style', cssLoader);
+    simpleCssLoader = ExtractTextPlugin.extract('style', 'css-loader');
   }
 
   var finalLoaders = [];

@@ -23,7 +23,7 @@ function config(settings, require) {
     delete queries.module;
   }
 
-  if (settings.styles && settings.styles.sourceMap) {
+  if (process.env.NODE_ENV !== 'production' && settings.styles && settings.styles.sourceMap) {
     queries.sourceMap = true;
   }
 

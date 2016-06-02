@@ -38,7 +38,7 @@ function config(settings, require) {
   // Add postcss support to LESS, SASS, stylus, ...
   settings.cssLoader += '!postcss';
 
-  if (settings.styles && settings.styles.sourceMap) {
+  if (process.env.NODE_ENV !== 'production' && settings.styles && settings.styles.sourceMap) {
     settings.cssLoader += '?sourceMap';
   }
 

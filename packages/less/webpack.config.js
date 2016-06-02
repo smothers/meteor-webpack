@@ -12,7 +12,7 @@ function dependencies(settings) {
 function config(settings, require) {
   var cssLoader = settings.cssLoader + '!less';
 
-  if (settings.styles && settings.styles.sourceMap) {
+  if (process.env.NODE_ENV !== 'production' && settings.styles && settings.styles.sourceMap) {
     cssLoader += '?sourceMap';
   }
 
@@ -22,6 +22,7 @@ function config(settings, require) {
   if (settings.cssExtract) {
     var ExtractTextPlugin = require('extract-text-webpack-plugin');
     cssLoader = ExtractTextPlugin.extract('style', cssLoader);
+    simpleCssLoader = ExtractTextPlugin.extract('style', simpleCssLoader);
   }
   
   var finalLoaders = [];
