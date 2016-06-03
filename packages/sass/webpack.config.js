@@ -20,7 +20,7 @@ function config(settings, require) {
   var config = {};
 
   // a loader without css-modules, used in case the settings have "modulesExcludes"
-  var simpleCssLoader = 'css?{}';
+  var simpleCssLoader = process.env.NODE_ENV !== 'production' ? 'style-loader!css-loader' : 'css?{}';
   if (settings.packages.indexOf('webpack:postcss') > 0) {
     simpleCssLoader += '!postcss';
   }
