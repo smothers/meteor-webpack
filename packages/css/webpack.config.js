@@ -15,7 +15,7 @@ function config(settings, require) {
   var loaders = [];
   var plugins = [];
 
-  var queries = settings.css || {};
+  var queries = _.clone(settings.css || {});
 
   // Support old setting
   if (queries.module) {
@@ -23,7 +23,15 @@ function config(settings, require) {
     delete queries.module;
   }
 
-  if (!queries.localIdentName) {
+  if (process.env.NODE_ENV !== 'production' && settings.styles && settings.styles.sourceMap) {
+    queries.sourceMap = true;
+  }
+
+  if (queries.modulesExcludes) {
+    delete queries.modulesExcludes;
+  }
+
+  if (queries.modules && !queries.localIdentName) {
     queries.localIdentName = '[name]__[local]__[hash:base64:5]';
   }
 
@@ -50,9 +58,21 @@ function config(settings, require) {
     cssLoader = ExtractTextPlugin.extract('style', cssLoader);
   }
 
+  var _mapRegex = function(stringArray) {
+    var result = [];
+    for (var i = 0, len = stringArray.length; i < len; i++) {
+      result.push(new RegExp(stringArray[i]));
+    }
+    return result;
+  };
+
   // Let postcss control CSS files if it is there
   if (cssLoader && settings.packages.indexOf('webpack:postcss') < 0) {
-    loaders.push({ test: /\.css$/, loader: cssLoader });
+    if (settings.css && settings.css.modules && settings.css.modulesExcludes) {
+      loaders.push({ test: /\.css$/, loader: cssLoader, exclude: _mapRegex(settings.css.modulesExcludes) });
+    } else {
+      loaders.push({ test: /\.css$/, loader: cssLoader });
+    }
   }
 
   return {
