@@ -38,6 +38,10 @@ function config(settings, require) {
   // Add postcss support to LESS, SASS, stylus, ...
   settings.cssLoader += '!postcss';
 
+  if (process.env.NODE_ENV !== 'production' && settings.styles && settings.styles.sourceMap) {
+    settings.cssLoader += '?sourceMap';
+  }
+
   var cssLoader = settings.cssLoader;
 
   if (settings.cssExtract) {
@@ -45,8 +49,20 @@ function config(settings, require) {
     cssLoader = ExtractTextPlugin.extract('style', cssLoader);
   }
 
+  var _mapRegex = function(stringArray) {
+    var result = [];
+    for (var i = 0, len = stringArray.length; i < len; i++) {
+      result.push(new RegExp(stringArray[i]));
+    }
+    return result;
+  };
+
   if (cssLoader) {
-    loaders.push({ test: /\.css$/, loader: cssLoader });
+    if (settings.css && settings.css.modules && settings.css.modulesExcludes) {
+      loaders.push({ test: /\.css$/, loader: cssLoader, exclude: _mapRegex(settings.css.modulesExcludes) });
+    } else {
+      loaders.push({ test: /\.css$/, loader: cssLoader });
+    }
   }
 
   return {
