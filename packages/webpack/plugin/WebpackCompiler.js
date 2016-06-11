@@ -52,7 +52,8 @@ WebpackCompiler = class WebpackCompiler {
       throw new Error('You cannot use the webpack compiler inside a package');
     }
 
-    const configFiles = filterFiles(files, 'webpack.conf.js');
+    const configFiles = filterFiles(files, ['webpack.conf.js', 'webpack.config.js'])
+      .filter(file => file.getPathInPackage().indexOf('node_modules') < 0);
 
     const platform = files[0].getArch();
     const shortName =
@@ -87,7 +88,7 @@ WebpackCompiler = class WebpackCompiler {
       }
     }
 
-    const settingsFiles = filterFiles(files, 'webpack.json');
+    const settingsFiles = filterFiles(files, ['webpack.json']);
     const settings = readSettings(settingsFiles, shortName);
 
     let webpackConfig = {
@@ -727,9 +728,9 @@ function compileDevServer(target, entryFile, configFiles, webpackConfig) {
   devServerApp.use(devServerHotMiddleware[target]);
 }
 
-function filterFiles(files, name) {
+function filterFiles(files, names) {
   return files
-    .filter(file => file.getBasename() === name)
+    .filter(file => names.indexOf(file.getBasename()) >= 0)
     // Sort by shallower files
     .sort((file1, file2) => file1.getPathInPackage().split('/').length - file2.getPathInPackage().split('/').length);
 }
