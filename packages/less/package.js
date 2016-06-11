@@ -1,6 +1,6 @@
 Package.describe({
     name: 'webpack:less',
-    version: '1.1.1',
+    version: '1.1.2',
     summary: 'Integrate LESS import with Webpack',
     git: 'https://github.com/thereactivestack/meteor-webpack.git',
     documentation: 'README.md'

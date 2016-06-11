@@ -1,6 +1,6 @@
 Package.describe({
     name: 'webpack:css',
-    version: '1.1.1',
+    version: '1.1.2',
     summary: 'Integrate CSS import with Webpack',
     git: 'https://github.com/thereactivestack/meteor-webpack.git',
     documentation: 'README.md'
