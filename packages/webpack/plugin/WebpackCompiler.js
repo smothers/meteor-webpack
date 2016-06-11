@@ -508,7 +508,11 @@ function prepareConfig(target, webpackConfig, usingDevServer, settings) {
 
   if (!IS_DEBUG) {
     // Production optimizations
-    webpackConfig.plugins.push(new webpack.optimize.UglifyJsPlugin());
+    webpackConfig.plugins.push(new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        warnings: true
+      }
+    }));
 
     if (!settings.disableOccurenceOrderPlugin) {
       webpackConfig.plugins.push(new webpack.optimize.OccurenceOrderPlugin());
