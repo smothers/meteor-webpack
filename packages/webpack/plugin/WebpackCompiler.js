@@ -761,8 +761,8 @@ const ignoreTarget = Meteor.isServer ? 'client' : 'server';
 let testFiles = [];
 
 if (Meteor.isAppTest) {
-${directories.map(directory => `  testFiles = testFiles.concat(require.context('./${directory}', true, /\.(test|spec|app-test|app-spec)(s)?\.(.+)$/i).keys()).map(file => './${directory}' + file.substr(1));\n`)}} else {
-${directories.map(directory => `  testFiles = testFiles.concat(require.context('./${directory}', true, /\.(test|spec)(s)?\.(.+)$/i).keys()).map(file => './${directory}' + file.substr(1));\n`)}}
+${directories.map(directory => `  testFiles = testFiles.concat(require.context('./${directory}', true, /\.(test|spec|app-test|app-spec)(s)?\.(.+)$/i).keys()).map(file => './${directory}' + file.substr(1));\n`).join('')}} else {
+${directories.map(directory => `  testFiles = testFiles.concat(require.context('./${directory}', true, /\.(test|spec)(s)?\.(.+)$/i).keys()).map(file => './${directory}' + file.substr(1));\n`).join('')}}
 
 testFiles
   .filter(file => file.indexOf('/' + ignoreTarget + '/') < 0)
