@@ -194,8 +194,10 @@ function updateNpmPackages(target, configs) {
   let pkg = {};
   const packageFile = path.join(CWD, 'package.json');
 
-  if (fs.existsSync(packageFile)) {
+  try {
     pkg = JSON.parse(fs.readFileSync(packageFile).toString());
+  } catch(e) {
+    // Do nothing if we can't read the file
   }
 
   if (!pkg.dependencies) {
@@ -605,11 +607,6 @@ function compile(target, entryFile, configFiles, webpackConfig) {
         'if (typeof global.jQuery === \'undefined\') { global.jQuery = {}; }\n' + // Polyfill so importing jquery in a file doesn't crash the server
         'WebpackStats = ' + JSON.stringify(webpackStats) + ';\n' + // Infos on Webpack build
         data;
-
-      if (_fs.existsSync(_path.join(CWD, 'node_modules', 'react'))) {
-        // Also expose React on the server for ssr
-        data = 'global.React = require(\'react\');\n' + data;
-      }
 
       if (IS_BUILD) {
         // Copy the NPM modules you need in production for the server
