@@ -109,6 +109,10 @@ WebpackCompiler = class WebpackCompiler {
     if (settings.root && typeof settings.root === 'string') {
       webpackConfig.resolve.root = _path.join(CWD, settings.root);
     }
+    
+    if (settings.alias && typeof settings.alias === 'object' && !Array.isArray(settings.alias)) {
+      webpackConfig.resolve.alias = settings.alias;
+    }
 
     if (settings.externals && typeof settings.externals === 'object' && !Array.isArray(settings.externals)) {
       webpackConfig.externals = settings.externals;
