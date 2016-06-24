@@ -1,13 +1,13 @@
 Package.describe({
-    name: 'webpack:webpack',
+    name: 'smothers:webpack',
     version: '1.3.3',
     summary: 'Seamlessly integrate Webpack to improve Meteor build system',
-    git: 'https://github.com/thereactivestack/meteor-webpack.git',
+    git: 'https://github.com/smothers/meteor-webpack.git',
     documentation: 'README.md'
 });
 
 Package.registerBuildPlugin({
-    name: 'webpack:webpack',
+    name: 'smothers:webpack',
     use: [
       'meteor',
       'ecmascript@0.1.5',

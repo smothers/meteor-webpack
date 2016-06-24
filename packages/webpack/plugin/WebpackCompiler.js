@@ -45,7 +45,7 @@ WebpackCompiler = class WebpackCompiler {
       generateTestRunner();
     }
 
-    files = files.filter(file => file.getPackageName() !== 'webpack:webpack');
+    files = files.filter(file => file.getPackageName() !== 'smothers:webpack');
     const packageFiles = files.filter(file => file.getPackageName() !== null);
 
     if (packageFiles && packageFiles.length > 0) {
@@ -109,7 +109,7 @@ WebpackCompiler = class WebpackCompiler {
     if (settings.root && typeof settings.root === 'string') {
       webpackConfig.resolve.root = _path.join(CWD, settings.root);
     }
-    
+
     if (settings.alias && typeof settings.alias === 'object' && !Array.isArray(settings.alias)) {
       webpackConfig.resolve.alias = settings.alias;
     }
